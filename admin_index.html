@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PrimeSIM Admin — admin.primesim.co</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --p:#08213A;--p2:#0d2e50;
+  --a:#00C896;--a2:#00a87e;--a3:rgba(0,200,150,.12);
+  --bg:#0f1923;--bg2:#162231;--bg3:#1c2d42;--bg4:#243350;
+  --card:#1a2a3d;--card2:#1f3048;
+  --ink:#e2e8f0;--ink2:#94a3b8;--ink3:#4a6080;
+  --b:rgba(255,255,255,.06);--b2:rgba(255,255,255,.1);--b3:rgba(255,255,255,.15);
+  --r:8px;--r2:12px;--r3:16px;
+  --green:#00C896;--blue:#3b82f6;--purple:#8b5cf6;
+  --amber:#f59e0b;--red:#ef4444;--pink:#ec4899;
+  --shadow:0 4px 24px rgba(0,0,0,.3);
+}
+html{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);height:100%;overflow:hidden}
+
+/* ─── LOGIN ─────────────────────────────── */
+#login{position:fixed;inset:0;background:linear-gradient(145deg,#060e18,#0a1825,#08213A);display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:9999}
+.l-logo{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+.l-mark{width:52px;height:52px;background:var(--a);border-radius:14px;display:grid;place-items:center;font-weight:900;font-size:20px;color:var(--p)}
+.l-name{font-size:28px;font-weight:800;color:white}.l-name em{color:var(--a);font-style:normal}
+.l-card{background:var(--card);border:1px solid var(--b2);border-radius:20px;padding:36px;width:380px;box-shadow:var(--shadow)}
+.l-card h2{font-size:20px;font-weight:700;margin-bottom:4px}
+.l-card p{font-size:12px;color:var(--ink2);margin-bottom:24px}
+.l-err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5;font-size:12px;padding:9px 12px;border-radius:8px;margin-bottom:12px;display:none}
+.l-err.show{display:block}
+.lf{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.lf label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3)}
+.lf input{background:var(--bg3);border:1px solid var(--b2);border-radius:8px;padding:11px 13px;font-size:14px;color:var(--ink);outline:none;transition:border-color .15s}
+.lf input:focus{border-color:var(--a)}
+.l-btn{width:100%;padding:12px;background:var(--a);color:var(--p);border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;margin-top:4px;transition:background .15s}
+.l-btn:hover{background:var(--a2)}
+.l-hint{text-align:center;font-size:11px;color:var(--ink3);margin-top:12px}
+
+/* ─── LAYOUT ─────────────────────────────── */
+#app{display:none;height:100vh;flex-direction:row}
+#app.show{display:flex}
+.sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--b);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
+.sb-head{padding:16px 14px 12px;border-bottom:1px solid var(--b)}
+.sb-brand{display:flex;align-items:center;gap:9px}
+.sb-mark{width:34px;height:34px;background:var(--a);border-radius:8px;display:grid;place-items:center;font-weight:900;font-size:13px;color:var(--p);flex-shrink:0}
+.sb-title{font-size:14px;font-weight:700}.sb-title em{color:var(--a);font-style:normal}
+.sb-tag{font-size:9px;background:var(--a3);color:var(--a);padding:1px 7px;border-radius:99px;font-weight:700;display:inline-block;margin-top:1px}
+.sb-section{padding:12px 10px 4px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--ink3)}
+.sb-item{display:flex;align-items:center;gap:8px;padding:7px 10px;font-size:12px;font-weight:600;color:var(--ink2);cursor:pointer;border-radius:7px;margin:1px 5px;border:none;background:none;text-align:left;width:calc(100% - 10px);transition:all .13s;position:relative}
+.sb-item:hover{background:var(--bg3);color:var(--ink)}
+.sb-item.on{background:var(--a3);color:var(--a)}
+.sb-item .i{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.sb-badge{position:absolute;right:8px;background:var(--red);color:white;font-size:9px;font-weight:900;padding:1px 5px;border-radius:99px;min-width:16px;text-align:center}
+.sb-badge.g{background:var(--a)}
+.sb-foot{margin-top:auto;padding:12px;border-top:1px solid var(--b)}
+.sb-user{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.sb-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--a),#3b82f6);display:grid;place-items:center;font-size:11px;font-weight:800;color:var(--p);flex-shrink:0}
+.sb-un{font-size:12px;font-weight:700}
+.sb-ue{font-size:10px;color:var(--ink3)}
+.sb-out{width:100%;padding:7px;background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.2);border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
+.sb-out:hover{background:rgba(239,68,68,.22)}
+
+/* ─── MAIN ──────────────────────────────── */
+.main-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:52px;background:var(--bg2);border-bottom:1px solid var(--b);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0}
+.breadcrumb{font-size:12px;color:var(--ink3);flex:1}
+.breadcrumb strong{color:var(--ink)}
+.tb-right{display:flex;align-items:center;gap:8px}
+.tb-status{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink2)}
+.tb-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.tb-btn{background:var(--bg3);border:1px solid var(--b2);border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;color:var(--ink2);transition:all .15s;text-decoration:none;display:flex;align-items:center;gap:5px}
+.tb-btn:hover{border-color:var(--a);color:var(--a)}
+.tb-notif{position:relative}
+.tb-notif-badge{position:absolute;top:-4px;right:-4px;width:14px;height:14px;background:var(--red);border-radius:50%;font-size:8px;font-weight:900;color:white;display:grid;place-items:center}
+
+/* ─── CONTENT ────────────────────────────── */
+.content{flex:1;overflow-y:auto;padding:20px}
+.sec{display:none;animation:fi .18s ease}
+.sec.on{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.pg-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:12px;flex-wrap:wrap}
+.pg-title{font-size:20px;font-weight:800}
+.pg-sub{font-size:12px;color:var(--ink2);margin-top:2px}
+.pg-actions{display:flex;gap:7px;flex-wrap:wrap}
+
+/* ─── BUTTONS ────────────────────────────── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .13s;white-space:nowrap}
+.btn-a{background:var(--a);color:var(--p)}.btn-a:hover{background:var(--a2)}
+.btn-p{background:var(--blue);color:white}.btn-p:hover{filter:brightness(1.15)}
+.btn-ghost{background:var(--bg3);color:var(--ink2);border:1px solid var(--b2)}.btn-ghost:hover{color:var(--ink);border-color:var(--b3)}
+.btn-red{background:rgba(239,68,68,.12);color:#fca5a5;border:1px solid rgba(239,68,68,.25)}.btn-red:hover{background:rgba(239,68,68,.25)}
+.btn-warn{background:rgba(245,158,11,.12);color:#fcd34d;border:1px solid rgba(245,158,11,.25)}.btn-warn:hover{background:rgba(245,158,11,.25)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-xs{padding:3px 8px;font-size:10px}
+.btn-icon{width:30px;height:30px;padding:0;border-radius:7px}
+
+/* ─── METRICS ───────────────────────────── */
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.metric-card{background:var(--card);border:1px solid var(--b);border-radius:var(--r2);padding:16px;position:relative;overflow:hidden}
+.metric-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px 3px 0 0}
+.mc-green::after{background:var(--green)}.mc-blue::after{background:var(--blue)}.mc-purple::after{background:var(--purple)}.mc-amber::after{background:var(--amber)}.mc-red::after{background:var(--red)}.mc-pink::after{background:var(--pink)}
+.mc-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);margin-bottom:7px}
+.mc-value{font-size:26px;font-weight:900;line-height:1;margin-bottom:4px}
+.mc-green .mc-value{color:var(--green)}.mc-blue .mc-value{color:#60a5fa}.mc-purple .mc-value{color:#a78bfa}.mc-amber .mc-value{color:#fcd34d}.mc-red .mc-value{color:#fca5a5}.mc-pink .mc-value{color:#f9a8d4}
+.mc-trend{font-size:11px;color:var(--ink2)}
+.mc-trend .up{color:var(--green);font-weight:700}
+.mc-trend .dn{color:var(--red);font-weight:700}
+
+/* ─── TABLES ─────────────────────────────── */
+.tbl-wrap{background:var(--card);border:1px solid var(--b);border-radius:var(--r2);overflow:hidden;margin-bottom:16px}
+.tbl-head{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--b);gap:10px;flex-wrap:wrap}
+.tbl-head-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tbl-head h3{font-size:13px;font-weight:700}
+.tbl-search{background:var(--bg3);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;font-size:12px;color:var(--ink);outline:none;width:180px}
+.tbl-search:focus{border-color:var(--a)}
+.tbl-filter{background:var(--bg3);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;font-size:11px;color:var(--ink2);outline:none;cursor:pointer}
+.tbl-filter option{background:var(--bg2)}
+.tbl-actions{display:flex;gap:6px;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse}
+thead th{padding:8px 12px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);text-align:left;background:var(--bg3);border-bottom:1px solid var(--b);white-space:nowrap;cursor:pointer;user-select:none}
+thead th:hover{color:var(--ink)}
+thead th.sort-asc::after{content:' ↑'}
+thead th.sort-desc::after{content:' ↓'}
+tbody td{padding:10px 12px;font-size:12px;border-bottom:1px solid rgba(255,255,255,.03);color:var(--ink2);vertical-align:middle}
+tbody tr:last-child td{border:none}
+tbody tr:hover td{background:rgba(255,255,255,.02)}
+tbody tr.selected td{background:var(--a3)}
+.td-primary{color:var(--ink)!important;font-weight:600}
+.td-mono{font-family:monospace;font-size:10px!important;color:var(--ink3)!important}
+.td-actions{display:flex;gap:4px;white-space:nowrap}
+.tbl-footer{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--b);font-size:11px;color:var(--ink3)}
+.pagination{display:flex;gap:3px}
+.pg-btn{width:26px;height:26px;background:var(--bg3);border:1px solid var(--b2);border-radius:5px;display:grid;place-items:center;font-size:11px;font-weight:700;cursor:pointer;color:var(--ink2);transition:all .13s}
+.pg-btn:hover,.pg-btn.on{background:var(--a);color:var(--p);border-color:var(--a)}
+.cb-all{cursor:pointer;accent-color:var(--a)}
+
+/* ─── STATUS BADGES ──────────────────────── */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:800;white-space:nowrap}
+.badge-green{background:rgba(0,200,150,.15);color:var(--green)}
+.badge-blue{background:rgba(59,130,246,.15);color:#60a5fa}
+.badge-amber{background:rgba(245,158,11,.15);color:#fcd34d}
+.badge-red{background:rgba(239,68,68,.15);color:#fca5a5}
+.badge-purple{background:rgba(139,92,246,.15);color:#a78bfa}
+.badge-gray{background:rgba(255,255,255,.07);color:var(--ink3)}
+.badge-pink{background:rgba(236,72,153,.15);color:#f9a8d4}
+
+/* ─── CHARTS ─────────────────────────────── */
+.chart-row{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:16px}
+.chart-card{background:var(--card);border:1px solid var(--b);border-radius:var(--r2);padding:16px}
+.chart-card h3{font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:14px}
+.chart-bar-wrap{display:flex;align-items:flex-end;gap:5px;height:140px}
+.bar-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bar-fill{width:100%;border-radius:4px 4px 0 0;cursor:pointer;transition:opacity .15s;min-height:4px}
+.bar-fill:hover{opacity:.8}
+.bar-lbl{font-size:9px;color:var(--ink3)}
+.bar-val{font-size:9px;color:var(--ink2);font-weight:700}
+.donut-wrap{display:flex;align-items:center;gap:16px}
+.donut-legend{flex:1}
+.dl-item{display:flex;align-items:center;gap:7px;margin-bottom:7px;font-size:11px}
+.dl-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+
+/* ─── FORMS ──────────────────────────────── */
+.form-card{background:var(--card);border:1px solid var(--b);border-radius:var(--r2);padding:20px;margin-bottom:14px}
+.form-card h3{font-size:13px;font-weight:700;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--b)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.ff{display:flex;flex-direction:column;gap:4px;margin-bottom:0}
+.ff.full{grid-column:1/-1}
+.ff label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3)}
+.ff input,.ff select,.ff textarea{background:var(--bg3);border:1px solid var(--b2);border-radius:7px;padding:8px 11px;font-size:12px;color:var(--ink);outline:none;transition:border-color .15s;font-family:inherit}
+.ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--a)}
+.ff select option{background:var(--bg2)}
+.ff textarea{resize:vertical;min-height:70px}
+.ff .help{font-size:10px;color:var(--ink3);margin-top:2px}
+.form-actions{display:flex;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--b)}
+.toggle-row{display:flex;align-items:center;gap:10px;padding:7px 0}
+.toggle{width:36px;height:20px;background:var(--bg3);border:1px solid var(--b2);border-radius:99px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--a);border-color:var(--a)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:white;transition:transform .2s}
+.toggle.on::after{transform:translateX(16px)}
+.toggle-lbl{font-size:12px;font-weight:600}
+.toggle-sub{font-size:10px;color:var(--ink3)}
+
+/* ─── MODAL ──────────────────────────────── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:800;display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-bg.open{opacity:1;pointer-events:all}
+.modal{background:var(--card2);border:1px solid var(--b2);border-radius:var(--r3);padding:24px;width:100%;max-width:560px;position:relative;box-shadow:var(--shadow);animation:mIn .22s ease;max-height:90vh;overflow-y:auto}
+.modal.modal-lg{max-width:800px}
+@keyframes mIn{from{transform:scale(.94) translateY(16px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.modal-close{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:var(--bg3);border:1px solid var(--b2);cursor:pointer;display:grid;place-items:center;font-size:13px;color:var(--ink2)}
+.modal-close:hover{background:var(--bg4)}
+.modal h2{font-size:16px;font-weight:800;margin-bottom:16px}
+
+/* ─── ALERTS ─────────────────────────────── */
+.alert{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:12px;color:#fca5a5}
+.alert-warn{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.25);color:#fcd34d}
+.alert-info{background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.25);color:#93c5fd}
+.alert-success{background:rgba(0,200,150,.1);border-color:rgba(0,200,150,.25);color:var(--green)}
+.alert-icon{font-size:16px;flex-shrink:0}
+
+/* ─── MISC ───────────────────────────────── */
+.divider{border:none;border-top:1px solid var(--b);margin:14px 0}
+.tag-wrap{display:flex;flex-wrap:wrap;gap:4px}
+.tag{display:inline-flex;align-items:center;gap:4px;background:var(--bg3);border:1px solid var(--b2);border-radius:5px;padding:3px 8px;font-size:10px;font-weight:600;color:var(--ink2)}
+.tag .rm{cursor:pointer;opacity:.5}.tag .rm:hover{opacity:1}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--a),#3b82f6);display:grid;place-items:center;font-size:10px;font-weight:800;color:var(--p);flex-shrink:0}
+.progress-bar{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;border-radius:99px;background:var(--a)}
+.empty-state{text-align:center;padding:48px 20px;color:var(--ink3)}
+.empty-state .es-icon{font-size:40px;margin-bottom:12px}
+.empty-state h3{font-size:14px;font-weight:700;margin-bottom:7px;color:var(--ink2)}
+.toast-container{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:var(--card2);border:1px solid var(--b2);border-radius:10px;padding:10px 14px;font-size:12px;font-weight:600;color:var(--ink);box-shadow:var(--shadow);display:flex;align-items:center;gap:8px;animation:tIn .3s ease;pointer-events:all}
+@keyframes tIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast.success{border-left:3px solid var(--green)}
+.toast.error{border-left:3px solid var(--red)}
+.toast.info{border-left:3px solid var(--blue)}
+
+/* ─── SCROLLBAR ──────────────────────────── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:99px}
+
+@media(max-width:900px){
+  .metric-grid{grid-template-columns:1fr 1fr}
+  .chart-row{grid-template-columns:1fr}
+  .form-grid,.form-grid-3{grid-template-columns:1fr}
+  .sidebar{width:180px}
+}
+</style>
+</head>
+<body>
+<!-- LOGIN -->
+<div id="login">
+  <div class="l-logo"><div class="l-mark">PS</div><div class="l-name">Prime<em>SIM</em> <span style="font-size:14px;font-weight:500;color:rgba(255,255,255,.4)">Admin</span></div></div>
+  <div class="l-card">
+    <h2>Admin Portal</h2><p>Sign in to access PrimeSIM dashboard</p>
+    <div class="l-err" id="l-err">Invalid email or password. Try admin@primesim.co / admin2024</div>
+    <div class="lf"><label>Email Address</label><input type="email" id="l-email" value="admin@primesim.co" placeholder="admin@primesim.co"></div>
+    <div class="lf"><label>Password</label><input type="password" id="l-pass" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="l-btn" onclick="doLogin()">Sign In</button>
+    <div class="l-hint">Demo: admin@primesim.co / admin2024</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sb-head">
+      <div class="sb-brand">
+        <div class="sb-mark">PS</div>
+        <div><div class="sb-title">Prime<em>SIM</em></div><span class="sb-tag">Admin Panel</span></div>
+      </div>
+    </div>
+    <div class="sb-section">Overview</div>
+    <button class="sb-item on" onclick="go('dashboard',this)"><span class="i">📊</span>Dashboard</button>
+
+    <div class="sb-section">Orders & eSIMs</div>
+    <button class="sb-item" onclick="go('orders',this)"><span class="i">📦</span>Orders<span class="sb-badge" id="bd-orders">12</span></button>
+    <button class="sb-item" onclick="go('esims',this)"><span class="i">📶</span>eSIM Profiles</button>
+
+    <div class="sb-section">Users</div>
+    <button class="sb-item" onclick="go('users',this)"><span class="i">👥</span>All Users</button>
+    <button class="sb-item" onclick="go('segments',this)"><span class="i">🏷️</span>Segments</button>
+
+    <div class="sb-section">Catalog</div>
+    <button class="sb-item" onclick="go('catalog',this)"><span class="i">🗂️</span>Plans Catalog</button>
+    <button class="sb-item" onclick="go('regions',this)"><span class="i">🌍</span>Regions</button>
+
+    <div class="sb-section">Providers</div>
+    <button class="sb-item" onclick="go('providers',this)"><span class="i">🔌</span>Providers</button>
+    <button class="sb-item" onclick="go('suppliers',this)"><span class="i">🏭</span>Suppliers</button>
+    <button class="sb-item" onclick="go('resellers',this)"><span class="i">🤝</span>Resellers</button>
+
+    <div class="sb-section">Marketing</div>
+    <button class="sb-item" onclick="go('campaigns',this)"><span class="i">🎯</span>Campaigns</button>
+    <button class="sb-item" onclick="go('coupons',this)"><span class="i">🎟️</span>Coupons</button>
+    <button class="sb-item" onclick="go('notifications',this)"><span class="i">🔔</span>Notifications</button>
+
+    <div class="sb-section">Finance</div>
+    <button class="sb-item" onclick="go('finance',this)"><span class="i">💰</span>Revenue</button>
+    <button class="sb-item" onclick="go('payouts',this)"><span class="i">💸</span>Payouts</button>
+    <button class="sb-item" onclick="go('commissions',this)"><span class="i">📊</span>Commissions</button>
+
+    <div class="sb-section">Analytics</div>
+    <button class="sb-item" onclick="go('analytics',this)"><span class="i">📈</span>Analytics</button>
+    <button class="sb-item" onclick="go('reports',this)"><span class="i">📄</span>Reports</button>
+
+    <div class="sb-section">Support</div>
+    <button class="sb-item" onclick="go('support',this)"><span class="i">🎧</span>Tickets<span class="sb-badge" id="bd-support">5</span></button>
+    <button class="sb-item" onclick="go('settings',this)"><span class="i">⚙️</span>Settings</button>
+
+    <div class="sb-foot">
+      <div class="sb-user">
+        <div class="sb-av" id="sb-av">AD</div>
+        <div><div class="sb-un" id="sb-un">Admin</div><div class="sb-ue" id="sb-ue">admin@primesim.co</div></div>
+      </div>
+      <button class="sb-out" onclick="doLogout()">🚪 Sign Out</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-area">
+    <div class="topbar">
+      <div class="breadcrumb">PrimeSIM / <strong id="bread">Dashboard</strong></div>
+      <div class="tb-right">
+        <div class="tb-status"><span class="tb-dot"></span>All systems operational</div>
+        <button class="tb-btn" onclick="go('support',null)">🔔 <span id="tb-notif">5</span></button>
+        <a class="tb-btn" href="https://app.primesim.co" target="_blank">↗ Live Site</a>
+      </div>
+    </div>
+    <div class="content" id="content">
+<!-- ═══════════════ DASHBOARD ═══════════════ -->
+<div id="sec-dashboard" class="sec on">
+  <div class="pg-head"><div><div class="pg-title">Dashboard</div><div class="pg-sub" id="dash-date"></div></div>
+  <div class="pg-actions"><button class="btn btn-ghost btn-sm" onclick="exportCSV('dashboard')">📊 Export</button><button class="btn btn-a btn-sm" onclick="refreshDash()">↻ Refresh</button></div></div>
+  <div id="dash-alerts"></div>
+  <div class="metric-grid">
+    <div class="metric-card mc-green"><div class="mc-label">Today Revenue</div><div class="mc-value">$2,847</div><div class="mc-trend"><span class="up">↑ 18%</span> vs yesterday</div></div>
+    <div class="metric-card mc-blue"><div class="mc-label">Total Orders</div><div class="mc-value">347</div><div class="mc-trend"><span class="up">↑ 24</span> this week</div></div>
+    <div class="metric-card mc-purple"><div class="mc-label">Active eSIMs</div><div class="mc-value">1,284</div><div class="mc-trend"><span class="up">+34</span> today</div></div>
+    <div class="metric-card mc-amber"><div class="mc-label">MRR</div><div class="mc-value">$84k</div><div class="mc-trend"><span class="up">↑ 31%</span> MoM</div></div>
+  </div>
+  <div class="metric-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="metric-card"><div class="mc-label">Total Users</div><div class="mc-value" style="font-size:20px;color:var(--ink)">12,847</div><div class="mc-trend"><span class="up">↑ 234</span> this week</div></div>
+    <div class="metric-card"><div class="mc-label">Avg Order Value</div><div class="mc-value" style="font-size:20px;color:var(--ink)">$14.20</div><div class="mc-trend"><span class="up">↑ $1.80</span> MoM</div></div>
+    <div class="metric-card"><div class="mc-label">Refund Rate</div><div class="mc-value" style="font-size:20px;color:var(--ink)">1.2%</div><div class="mc-trend"><span class="up">↓ 0.3%</span> improving</div></div>
+    <div class="metric-card"><div class="mc-label">AI Support Rate</div><div class="mc-value" style="font-size:20px;color:var(--ink)">67%</div><div class="mc-trend">tickets handled by AI</div></div>
+  </div>
+  <div class="chart-row">
+    <div class="chart-card"><h3>Weekly Revenue ($)</h3><div class="chart-bar-wrap" id="rev-chart"></div></div>
+    <div class="chart-card"><h3>Provider Distribution</h3>
+      <div class="donut-wrap">
+        <svg width="90" height="90" viewBox="0 0 42 42">
+          <circle cx="21" cy="21" r="15.91" fill="none" stroke="var(--bg3)" stroke-width="7"/>
+          <circle cx="21" cy="21" r="15.91" fill="none" stroke="var(--green)" stroke-width="7" stroke-dasharray="55 45" stroke-dashoffset="25"/>
+          <circle cx="21" cy="21" r="15.91" fill="none" stroke="var(--blue)" stroke-width="7" stroke-dasharray="20 80" stroke-dashoffset="-30"/>
+          <circle cx="21" cy="21" r="15.91" fill="none" stroke="var(--purple)" stroke-width="7" stroke-dasharray="25 75" stroke-dashoffset="-50"/>
+        </svg>
+        <div class="donut-legend">
+          <div class="dl-item"><div class="dl-dot" style="background:var(--green)"></div>eSIM Access 55%</div>
+          <div class="dl-item"><div class="dl-dot" style="background:var(--blue)"></div>Telnyx 20%</div>
+          <div class="dl-item"><div class="dl-dot" style="background:var(--purple)"></div>Zendit 25%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="tbl-wrap">
+    <div class="tbl-head"><h3>Recent Orders</h3><div class="tbl-actions"><button class="btn btn-ghost btn-sm" onclick="go('orders',null)">View All →</button></div></div>
+    <table><thead><tr><th>Order</th><th>User</th><th>Plan</th><th>Amount</th><th>Provider</th><th>Status</th><th>Date</th></tr></thead>
+    <tbody id="dash-orders"></tbody></table>
+  </div>
+</div>
+
+<!-- ═══════════════ ORDERS ═══════════════ -->
+<div id="sec-orders" class="sec">
+  <div class="pg-head"><div><div class="pg-title">Orders</div><div class="pg-sub">Manage all eSIM orders, provisioning and refunds</div></div>
+  <div class="pg-actions">
+    <button class="btn btn-ghost btn-sm" onclick="exportCSV('orders')">📊 CSV</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportPDF('orders')">📄 PDF</button>
+    <button class="btn btn-a btn-sm" onclick="openModal('order-add')">+ Manual Order</button>
+  </div></div>
+  <div class="metric-grid">
+    <div class="metric-card mc-green"><div class="mc-label">Total Orders</div><div class="mc-value">347</div><div class="mc-trend"><span class="up">↑ 24%</span> this week</div></div>
+    <div class="metric-card mc-blue"><div class="mc-label">Active</div><div class="mc-value">284</div><div class="mc-trend">81.8% success rate</div></div>
+    <div class="metric-card mc-amber"><div class="mc-label">Pending</div><div class="mc-value">12</div><div class="mc-trend">awaiting provision</div></div>
+    <div class="metric-card mc-red"><div class="mc-label">Refunded</div><div class="mc-value">8</div><div class="mc-trend">$112 total</div></div>
+  </div>
+  <div class="tbl-wrap">
+    <div class="tbl-head">
+      <div class="tbl-head-left">
+        <h3>All Orders</h3>
+        <input class="tbl-search" placeholder="Search order, user, ICCID..." oninput="filterTable('orders-tbl',this.value)">
+        <select class="tbl-filter" onchange="filterByStatus('orders-tbl',this.value)">
+          <option value="">All Status</option><option>active</option><option>pending</option><option>refunded</option><option>cancelled</option>
+        </select>
+        <select class="tbl-filter" onchange="filterByProvider('orders-tbl',this.value)">
+          <option value="">All Providers</option><option>eSIM Access</option><option>Telnyx</option><option>Zendit</option>
+        </select>
+      </div>
+      <div class="tbl-actions">
+        <button class="btn btn-ghost btn-sm" id="bulk-btn" style="display:none" onclick="bulkAction()">Bulk Action ▾</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportCSV('orders')">📊 Export</button>
+      </div>
+    </div>
+    <table><thead><tr>
+      <th><input type="checkbox" class="cb-all" onchange="selectAll('orders-tbl',this)"></th>
+      <th onclick="sortTable('orders-tbl',1)">Order #</th>
+      <th onclick="sortTable('orders-tbl',2)">User</th>
+      <th onclick="sortTable('orders-tbl',3)">Plan</th>
+      <th onclick="sortTable('orders-tbl',4)">Amount</th>
+      <th onclick="sortTable('orders-tbl',5)">Provider</th>
+      <th>ICCID</th>
+      <th>Coupon</th>
+      <th onclick="sortTable('orders-tbl',8)">Status</th>
+      <th onclick="sortTable('orders-tbl',9)">Date</th>
+      <th>Actions</th>
+    </tr></thead>
+    <tbody id="orders-tbl"></tbody></table>
+    <div class="tbl-footer"><span id="orders-count">Loading...</span><div class="pagination" id="orders-pg"></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ ESIM PROFILES ═══════════════ -->
+<div id="sec-esims" class="sec">
+  <div class="pg-head"><div><div class="pg-title">eSIM Profiles</div><div class="pg-sub">All provisioned eSIM profiles and usage tracking</div></div>
+  <div class="pg-actions">
+    <button class="btn btn-ghost btn-sm" onclick="exportCSV('esims')">📊 Export</button>
+    <button class="btn btn-a btn-sm" onclick="openModal('esim-provision')">+ Provision eSIM</button>
+  </div></div>
+  <div class="metric-grid">
+    <div class="metric-card mc-green"><div class="mc-label">Active</div><div class="mc-value">1,284</div><div class="mc-trend"><span class="up">+34</span> today</div></div>
+    <div class="metric-card mc-amber"><div class="mc-label">Pending Install</div><div class="mc-value">23</div><div class="mc-trend">QR not yet scanned</div></div>
+    <div class="metric-card mc-red"><div class="mc-label">Expired</div><div class="mc-value">847</div><div class="mc-trend">last 30 days</div></div>
+    <div class="metric-card mc-blue"><div class="mc-label">Low Data Alert</div><div class="mc-value">67</div><div class="mc-trend">< 10% remaining</div></div>
+  </div>
+  <div class="tbl-wrap">
+    <div class="tbl-head">
+      <div class="tbl-head-left">
+        <h3>All eSIM Profiles</h3>
+        <input class="tbl-search" placeholder="Search ICCID, user..." oninput="filterTable('esims-tbl',this.value)">
+        <select class="tbl-filter" onchange="filterByStatus('esims-tbl',this.value)">
+          <option value="">All Status</option><option>active</option><option>pending</option><option>expired</option><option>revoked</option>
+        </select>
+      </div>
+      <div class="tbl-actions"><button class="btn btn-ghost btn-sm" onclick="exportCSV('esims')">📊 Export</button></div>
+    </div>
+    <table><thead><tr>
+      <th><input type="checkbox" class="cb-all" onchange="selectAll('esims-tbl',this)"></th>
+      <th>ICCID</th><th>User</th><th>Plan</th><th>Data Used</th><th>Data Left</th><th>Progress</th><th>Provider</th><th>Expires</th><th>Status</th><th>Actions</th>
+    </tr></thead>
+    <tbody id="esims-tbl"></tbody></table>
+    <div class="tbl-footer"><span id="esims-count">Loading...</span><div class="pagination" id="esims-pg"></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ USERS ═══════════════ -->
+<div id="sec-users" class="sec">
+  <div class="pg-head"><div><div class="pg-title">Users</div><div class="pg-sub">Manage all registered users, segments and permissions</div></div>
+  <div class="pg-actions">
+    <button class="btn btn-ghost btn-sm" onclick="exportCSV('users')">📊 Export</button>
+    <button class="btn btn-warn btn-sm" onclick="openModal('user-import')">⬆ Import CSV</button>
+    <button class="btn btn-a btn-sm" onclick="openModal('user-add')">+ Add User</button>
+  </div></div>
+  <div class="metric-grid">
+    <div class="metric-card mc-blue"><div class="mc-label">Total Users</div><div class="mc-value">12,847</div><div class="mc-trend"><span class="up">↑ 234</span> this week</div></div>
+    <div class="metric-card mc-green"><div class="mc-label">Active (30d)</div><div class="mc-value">4,291</div><div class="mc-trend">33.4% retention</div></div>
+    <div class="metric-card mc-purple"><div class="mc-label">VIP Users</div><div class="mc-value">847</div><div class="mc-trend">6.6% of total</div></div>
+    <div class="metric-card mc-amber"><div class="mc-label">Avg LTV</div><div class="mc-value">$47.20</div><div class="mc-trend"><span class="up">↑ $8</span> vs last month</div></div>
+  </div>
+  <div class="tbl-wrap">
+    <div class="tbl-head">
+      <div class="tbl-head-left">
+        <h3>All Users</h3>
+        <input class="tbl-search" placeholder="Search name, email..." oninput="filterTable('users-tbl',this.value)">
+        <select class="tbl-filter" onchange="filterByStatus('users-tbl',this.value)">
+          <option value="">All Segments</option><option>VIP</option><option>Regular</option><option>New</option><option>Churned</option>
+        </select>
+        <select class="tbl-filter">
+          <option value="">All Countries</option><option>Turkey</option><option>Germany</option><option>USA</option><option>Japan</option>
+        </select>
+      </div>
+      <div class="tbl-actions">
+        <button class="btn btn-ghost btn-sm" id="user-bulk-btn" style="display:none" onclick="openModal('user-bulk')">Bulk Action ▾</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportCSV('users')">📊 Export</button>
+      </div>
+    </div>
+    <table><thead><tr>
+      <th><input type="checkbox" class="cb-all" onchange="selectAll('users-tbl',this)"></th>
+      <th onclick="sortTable('users-tbl',1)">User</th>
+      <th onclick="sortTable('users-tbl',2)">Email</th>
+      <th>Country</th>
+      <th onclick="sortTable('users-tbl',4)">Orders</th>
+      <th onclick="sortTable('users-tbl',5)">Total Spent</th>
+      <th>Segment</th>
+      <th>Auth Method</th>
+      <th onclick="sortTable('users-tbl',8)">Registered</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr></thead>
+    <tbody id="users-tbl"></tbody></table>
+    <div class="tbl-footer"><span id="users-count">Loading...</span><div class="pagination" id="users-pg"></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ SEGMENTS ═══════════════ -->
+<div id="sec-segments" class="sec">
+  <div class="pg-head"><div><div class="pg-title">User Segments</div><div class="pg-sub">Define and manage user segments for targeted campaigns</div></div>
+  <div class="pg-actions"><button class="btn btn-a btn-sm" onclick="openModal('segment-add')">+ Create Segment</button></div></div>
+  <div id="segments-list"></div>
+</div>
+
+<!-- ═══════════════ CATALOG ═══════════════ -->
+<div id="sec-catalog" class="sec">
+  <div class="pg-head"><div><div class="pg-title">Plans Catalog</div><div class="pg-sub">Manage all eSIM plans, pricing and availability across 130+ countries</div></div>
+  <div class="pg-actions">
+    <button class="btn btn-ghost btn-sm" onclick="exportCSV('catalog')">📊 Export</button>
+    <button class="btn btn-warn btn-sm" onclick="openModal('catalog-import')">⬆ Bulk Import</button>
+    <button class="btn btn-a btn-sm" onclick="openModal('plan-add')">+ Add Plan</button>
+  </div></div>
+  <div class="metric-grid">
+    <div class="metric-card mc-blue"><div class="mc-label">Total Plans</div><div class="mc-value">248</div><div class="mc-trend">across 3 providers</div></div>
+    <div class="metric-card mc-green"><div class="mc-label">Active Plans</div><div class="mc-value">231</div><div class="mc-trend">93.1% availability</div></div>
+    <div class="metric-card mc-amber"><div class="mc-label">Countries</div><div class="mc-value">130+</div><div class="mc-trend">5 regions</div></div>
+    <div class="metric-card mc-purple"><div class="mc-label">Avg Margin</div><div class="mc-value">42%</div><div class="mc-trend"><span class="up">↑ 3%</span> vs last month</div></div>
+  </div>
+  <div class="tbl-wrap">
+    <div class="tbl-head">
+      <div class="tbl-head-left">
+        <h3>All Plans</h3>
+        <input class="tbl-search" placeholder="Search country, plan..." oninput="filterTable('catalog-tbl',this.value)">
+        <select class="tbl-filter" onchange="filterByRegion('catalog-tbl',this.value)">
+          <option value="">All Regions</option><option>Europe</option><option>Asia</option><option>Americas</option><option>MENA</option><option>Global</option>
+        </select>
+        <select class="tbl-filter">
+          <option value="">All Providers</option><option>eSIM Access</option><option>Telnyx</option><option>Zendit</option>
+        </select>
+        <select class="tbl-filter">
+          <option value="">All Status</option><option>active</option><option>inactive</option><option>out_of_stock</option>
+        </select>
+      </div>
+      <div class="tbl-actions">
+        <button class="btn btn-ghost btn-sm" id="cat-bulk-btn" style="display:none" onclick="openModal('bulk-price')">Bulk Price Edit</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportCSV('catalog')">📊 Export</button>
+      </div>
+    </div>
+    <table><thead><tr>
+      <th><input type="checkbox" class="cb-all" onchange="selectAll('catalog-tbl',this)"></th>
+      <th onclick="sortTable('catalog-tbl',1)">Flag</th>
+      <th onclick="sortTable('catalog-tbl',2)">Country</th>
+      <th>Region</th>
+      <th onclick="sortTable('catalog-tbl',4)">Data</th>
+      <th>Days</th>
+      <th>Speed</th>
+      <th>Provider</th>
+      <th>Wholesale $</th>
+      <th>Retail $</th>
+      <th>Margin</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr></thead>
+    <tbody id="catalog-tbl"></tbody></table>
+    <div class="tbl-footer"><span id="catalog-count">Loading...</span><div class="pagination" id="catalog-pg"></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ REGIONS ═══════════════ -->
+<div id="sec-regions" class="sec">
+  <div class="pg-head"><div><div class="pg-title">Regions</div><div class="pg-sub">Manage regional groupings for multi-country eSIM plans</div></div>
+  <div class="pg-actions"><button class="btn btn-a btn-sm" onclick="openModal('region-add')">+ Add Region</button></div></div>
+  <div id="regions-cards"></div>
+</div>
+
+<!-- ═══════════════ PROVIDERS ═══════════════ -->
+<div id="sec-providers" class="sec">
+  <div class="pg-head"><div><div class="pg-title">Providers</div><div class="pg-sub">Manage eSIM provider integrations, health monitoring and failover</div></div>
+  <div class="pg-actions">
+    <button class="btn btn-ghost btn-sm" onclick="refreshProviders()">↻ Health Check</button>
+    <button class="btn btn-a btn-sm" onclick="openModal('provider-add')">+ Add Provider</button>
+  </div></div>
+  <div id="provider-cards"></div>
+  <div class="tbl-wrap" style="margin-top:14px">
+    <div class="tbl-head"><h3>Provider Performance Log</h3><div class="tbl-actions"><button class="btn btn-ghost btn-sm" onclick="exportCSV('providers')">📊 Export</button></div></div>
+    <table><thead><tr><th>Provider</th><th>Metric</th><th>Value</th><th>Period</th><th>Trend</th></tr></thead>
+    <tbody id="provider-log"></tbody></table>
+  </div>
+</div>
+
+<!-- ═══════════════ SUPPLIERS ═══════════════ -->
+<div id="sec-suppliers" class="sec">
+  <div class="pg-head"><div><div class="pg-title">Suppliers</div><div class="pg-sub">Wholesale supplier agreements and inventory management</div></div>
+  <div class="pg-actions"><button class="btn btn-a btn-sm" onclick="openModal('supplier-add')">+ Add Supplier</button></div></div>
+  <div class="tbl-wrap">
+    <div class="tbl-head"><h3>Suppliers</h3><div class="tbl-actions"><button class="btn btn-ghost btn-sm" onclick="exportCSV('suppliers')">📊 Export</button></div></div>
+    <table><thead><tr><th>Supplier</th><th>Countries</th><th>Active Plans</th><th>Monthly Volume</th><th>Avg Price/GB</th><th>Contract</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody id="suppliers-tbl"></tbody></table>
+  </div>
+</div>
+
+<!-- ═══════════════ RESELLERS ═══════════════ -->
+<div id="sec-resellers" class="sec">
+  <div class="pg-head"><div><div class="pg-title">Resellers</div><div class="pg-sub">Manage reseller accounts, API keys and commission tracking</div></div>
+  <div class="pg-actions">
+    <button class="btn btn-ghost btn-sm" onclick="exportCSV('resellers')">📊 Export</button>
+    <button class="btn btn-a btn-sm" onclick="openModal('reseller-add')">+ Add Reseller</button>
+  </div></div>
+  <div class="metric-grid">
+    <div class="metric-card mc-blue"><div class="mc-label">Active Resellers</div><div class="mc-value">47</div></div>
+    <div class="metric-card mc-green"><div class="mc-label">Monthly GMV</div><div class="mc-value">$28k</div></div>
+    <div class="metric-card mc-amber"><div class="mc-label">Pending Commission</div><div class="mc-value">$3,200</div></div>
+    <div class="metric-card mc-purple"><div class="mc-label">White-Label</div><div class="mc-value">12</div></div>
+  </div>
+  <div class="tbl-wrap">
+    <div class="tbl-head"><h3>All Resellers</h3>
+    <div class="tbl-head-left" style="flex:1;margin-left:10px"><input class="tbl-search" placeholder="Search reseller..." oninput="filterTable('resellers-tbl',this.value)"></div>
+    <div class="tbl-actions"><button class="btn btn-ghost btn-sm" onclick="exportCSV('resellers')">📊</button></div></div>
+    <table><thead><tr><th>Company</th><th>Contact</th><th>API Key</th><th>Commission</th><th>Monthly GMV</th><th>White-Label</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody id="resellers-tbl"></tbody></table>
+  </div>
+</div>
+
+<!-- ═══════════════ CAMPAIGNS ═══════════════ -->
+<div id="sec-campaigns" class="sec">
+  <div class="pg-head"><div><div class="pg-title">Campaigns</div><div class="pg-sub">Create and manage promotional campaigns with ROI tracking</div></div>
+  <div class="pg-actions">
+    <button class="btn btn-ghost btn-sm" onclick="exportCSV('campaigns')">📊 Export</button>
+    <button class="btn btn-a btn-sm" onclick="openModal('campaign-add')">+ Create Campaign</button>
+  </div></div>
+  <div class="metric-grid">
+    <div class="metric-card mc-green"><div class="mc-label">Active Campaigns</div><div class="mc-value">4</div></div>
+    <div class="metric-card mc-blue"><div class="mc-label">Total Revenue from Campaigns</div><div class="mc-value">$46.6k</div></div>
+    <div class="metric-card mc-purple"><div class="mc-label">Coupon Redemptions</div><div class="mc-value">941</div></div>
+    <div class="metric-card mc-amber"><div class="mc-label">Avg ROI</div><div class="mc-value">312%</div></div>
+  </div>
+  <div class="tbl-wrap">
+    <div class="tbl-head"><h3>All Campaigns</h3><div class="tbl-actions"><button class="btn btn-ghost btn-sm" onclick="exportCSV('campaigns')">📊</button></div></div>
+    <table><thead><tr><th>Campaign</th><th>Type</th><th>Discount</th><th>Target</th><th>Used / Limit</th><th>Revenue</th><th>ROI</th><th>Expires</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody id="campaigns-tbl"></tbody></table>
+  </div>
+</div>
+
+<!-- ═══════════════ COUPONS ═══════════════ -->
+<div id="sec-coupons" class="sec">
+  <div class="pg-head"><div><div class="pg-title">Coupons</div><div class="pg-sub">Generate and manage discount coupon codes</div></div>
+  <div class="pg-actions">
+    <button class="btn btn-ghost btn-sm" onclick="exportCSV('coupons')">📊 CSV</button>
+    <button class="btn btn-p btn-sm" onclick="openModal('coupon-bulk')">⚡ Bulk Generate</button>
+    <button class="btn btn-a btn-sm" onclick="openModal('coupon-add')">+ Add Coupon</button>
+  </div></div>
+  <div class="tbl-wrap">
+    <div class="tbl-head">
+      <div class="tbl-head-left"><h3>All Coupons</h3>
+        <input class="tbl-search" placeholder="Search code..." oninput="filterTable('coupons-tbl',this.value)">
+        <select class="tbl-filter"><option value="">All Status</option><option>active</option><option>expired</option><option>depleted</option></select>
+      </div>
+      <div class="tbl-actions"><button class="btn btn-ghost btn-sm" onclick="exportCSV('coupons')">📊</button></div>
+    </div>
+    <table><thead><tr><th><input type="checkbox" class="cb-all" onchange="selectAll('coupons-tbl',this)"></th><th>Code</th><th>Discount</th><th>Type</th><th>Used</th><th>Limit</th><th>Revenue</th><th>Campaign</th><th>Expires</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody id="coupons-tbl"></tbody></table>
+  </div>
+</div>
+
+<!-- ═══════════════ NOTIFICATIONS ═══════════════ -->
+<div id="sec-notifications" class="sec">
+  <div class="pg-head"><div><div class="pg-title">Notifications</div><div class="pg-sub">Send push, email and in-app notifications to users</div></div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+    <div class="form-card">
+      <h3>📤 Send Notification</h3>
+      <div class="ff"><label>Channel</label>
+        <select id="notif-channel"><option>Push (FCM)</option><option>Email</option><option>In-App</option><option>All Channels</option></select>
+      </div>
+      <div class="ff"><label>Audience</label>
+        <select id="notif-audience"><option>All Users</option><option>VIP Users</option><option>New Users (last 7 days)</option><option>Users with Low Data</option><option>Churned Users</option><option>Specific Segment</option></select>
+      </div>
+      <div class="ff"><label>Title</label><input id="notif-title" placeholder="e.g. Flash Sale — 40% Off Today!"></div>
+      <div class="ff"><label>Message</label><textarea id="notif-msg" placeholder="Your notification message..."></textarea></div>
+      <div class="ff"><label>Schedule (optional)</label><input type="datetime-local" id="notif-time"></div>
+      <div class="form-actions">
+        <button class="btn btn-ghost" onclick="previewNotif()">👁 Preview</button>
+        <button class="btn btn-a" onclick="sendNotif()">📤 Send Now</button>
+      </div>
+    </div>
+    <div>
+      <div class="tbl-wrap">
+        <div class="tbl-head"><h3>Notification History</h3></div>
+        <table><thead><tr><th>Title</th><th>Channel</th><th>Sent To</th><th>Open Rate</th><th>Date</th><th>Status</th></tr></thead>
+        <tbody id="notif-tbl"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FINANCE ═══════════════ -->
+<div id="sec-finance" class="sec">
+  <div class="pg-head"><div><div class="pg-title">Revenue & Finance</div><div class="pg-sub">Revenue breakdown, costs, margins and financial reporting</div></div>
+  <div class="pg-actions">
+    <button class="btn btn-ghost btn-sm" onclick="exportCSV('finance')">📊 Excel</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportPDF('finance')">📄 PDF</button>
+  </div></div>
+  <div class="metric-grid">
+    <div class="metric-card mc-green"><div class="mc-label">MRR</div><div class="mc-value">$84,291</div><div class="mc-trend"><span class="up">↑ 31%</span> MoM</div></div>
+    <div class="metric-card mc-blue"><div class="mc-label">Net Profit</div><div class="mc-value">$31,847</div><div class="mc-trend">37.8% margin</div></div>
+    <div class="metric-card mc-purple"><div class="mc-label">Stripe Balance</div><div class="mc-value">$12,440</div><div class="mc-trend">available for payout</div></div>
+    <div class="metric-card mc-red"><div class="mc-label">Refunds</div><div class="mc-value">$1,012</div><div class="mc-trend">1.2% refund rate</div></div>
+  </div>
+  <div class="chart-row">
+    <div class="chart-card"><h3>Monthly Revenue vs Cost ($)</h3><div class="chart-bar-wrap" id="finance-chart"></div></div>
+    <div class="chart-card"><h3>Revenue Sources</h3>
+      <div class="donut-wrap">
+        <svg width="90" height="90" viewBox="0 0 42 42">
+          <circle cx="21" cy="21" r="15.91" fill="none" stroke="var(--bg3)" stroke-width="7"/>
+          <circle cx="21" cy="21" r="15.91" fill="none" stroke="var(--green)" stroke-width="7" stroke-dasharray="65 35" stroke-dashoffset="25"/>
+          <circle cx="21" cy="21" r="15.91" fill="none" stroke="var(--blue)" stroke-width="7" stroke-dasharray="20 80" stroke-dashoffset="-40"/>
+          <circle cx="21" cy="21" r="15.91" fill="none" stroke="var(--purple)" stroke-width="7" stroke-dasharray="15 85" stroke-dashoffset="-60"/>
+        </svg>
+        <div class="donut-legend">
+          <div class="dl-item"><div class="dl-dot" style="background:var(--green)"></div>B2C 65%</div>
+          <div class="dl-item"><div class="dl-dot" style="background:var(--blue)"></div>B2B 20%</div>
+          <div class="dl-item"><div class="dl-dot" style="background:var(--purple)"></div>Resellers 15%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="tbl-wrap">
+    <div class="tbl-head"><h3>Monthly P&L</h3><div class="tbl-actions"><button class="btn btn-ghost btn-sm" onclick="exportCSV('finance')">📊 Export</button></div></div>
+    <table><thead><tr><th>Month</th><th>Revenue</th><th>Provider Cost</th><th>Stripe Fees</th><th>Refunds</th><th>Net Profit</th><th>Margin</th><th>vs Prev</th></tr></thead>
+    <tbody id="finance-tbl"></tbody></table>
+  </div>
+</div>
+
+<!-- ═══════════════ PAYOUTS ═══════════════ -->
+<div id="sec-payouts" class="sec">
+  <div class="pg-head"><div><div class="pg-title">Payouts</div><div class="pg-sub">Stripe transaction history and payout management</div></div>
+  <div class="pg-actions"><button class="btn btn-ghost btn-sm" onclick="exportCSV('payouts')">📊 Export</button></div></div>
+  <div class="tbl-wrap">
+    <div class="tbl-head"><h3>Stripe Transactions</h3>
+    <div class="tbl-head-left" style="flex:1;margin-left:10px"><input class="tbl-search" placeholder="Search transaction..." oninput="filterTable('payouts-tbl',this.value)"></div>
+    </div>
+    <table><thead><tr><th>Transaction ID</th><th>Amount</th><th>Fee</th><th>Net</th><th>Type</th><th>Customer</th><th>Date</th><th>Status</th></tr></thead>
+    <tbody id="payouts-tbl"></tbody></table>
+  </div>
+</div>
+
+<!-- ═══════════════ COMMISSIONS ═══════════════ -->
+<div id="sec-commissions" class="sec">
+  <div class="pg-head"><div><div class="pg-title">Commissions</div><div class="pg-sub">Reseller commission tracking and bulk payments</div></div>
+  <div class="pg-actions">
+    <button class="btn btn-ghost btn-sm" onclick="exportCSV('commissions')">📊 Export</button>
+    <button class="btn btn-a btn-sm" onclick="bulkPayCommissions()">💸 Pay All Pending</button>
+  </div></div>
+  <div class="metric-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="metric-card mc-amber"><div class="mc-label">Pending</div><div class="mc-value">$3,200</div></div>
+    <div class="metric-card mc-green"><div class="mc-label">Paid This Month</div><div class="mc-value">$8,400</div></div>
+    <div class="metric-card mc-blue"><div class="mc-label">Annual Total</div><div class="mc-value">$62,100</div></div>
+  </div>
+  <div class="tbl-wrap">
+    <div class="tbl-head"><h3>Commission Ledger</h3></div>
+    <table><thead><tr><th>Reseller</th><th>Orders</th><th>GMV</th><th>Commission Rate</th><th>Amount</th><th>Period</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody id="commissions-tbl"></tbody></table>
+  </div>
+</div>
+
+<!-- ═══════════════ ANALYTICS ═══════════════ -->
+<div id="sec-analytics" class="sec">
+  <div class="pg-head"><div><div class="pg-title">Analytics</div><div class="pg-sub">Deep performance insights and user behavior analytics</div></div>
+  <div class="pg-actions">
+    <select class="tbl-filter" onchange="changeAnalyticsPeriod(this.value)">
+      <option>Last 7 days</option><option>Last 30 days</option><option>Last 90 days</option><option>This year</option>
+    </select>
+    <button class="btn btn-ghost btn-sm" onclick="exportCSV('analytics')">📊 Export</button>
+  </div></div>
+  <div class="metric-grid">
+    <div class="metric-card mc-blue"><div class="mc-label">Daily Active Users</div><div class="mc-value">1,847</div><div class="mc-trend"><span class="up">↑ 12%</span></div></div>
+    <div class="metric-card mc-green"><div class="mc-label">Conversion Rate</div><div class="mc-value">4.2%</div><div class="mc-trend"><span class="up">↑ 0.8%</span></div></div>
+    <div class="metric-card mc-purple"><div class="mc-label">Avg Session</div><div class="mc-value">3:24</div><div class="mc-trend">minutes per visit</div></div>
+    <div class="metric-card mc-amber"><div class="mc-label">Bounce Rate</div><div class="mc-value">38%</div><div class="mc-trend"><span class="up">↓ 4%</span> improving</div></div>
+  </div>
+  <div class="chart-row">
+    <div class="chart-card"><h3>Daily Active Users (Last 7 Days)</h3><div class="chart-bar-wrap" id="analytics-dau"></div></div>
+    <div class="chart-card"><h3>Top Countries by Sales</h3>
+      <div id="top-countries"></div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div class="chart-card"><h3>Sales by Region</h3><div class="chart-bar-wrap" id="analytics-regions"></div></div>
+    <div class="chart-card"><h3>Traffic Sources</h3>
+      <div id="traffic-sources"></div>
+    </div>
+  </div>
+  <div class="tbl-wrap">
+    <div class="tbl-head"><h3>Top Performing Plans</h3></div>
+    <table><thead><tr><th>Plan</th><th>Orders</th><th>Revenue</th><th>Conversion</th><th>Avg Rating</th><th>Trend</th></tr></thead>
+    <tbody id="analytics-plans"></tbody></table>
+  </div>
+</div>
+
+<!-- ═══════════════ REPORTS ═══════════════ -->
+<div id="sec-reports" class="sec">
+  <div class="pg-head"><div><div class="pg-title">Reports</div><div class="pg-sub">Generate comprehensive reports in Excel and PDF formats</div></div></div>
+  <div id="reports-grid"></div>
+  <div class="form-card" style="margin-top:14px">
+    <h3>📋 Custom Report Builder</h3>
+    <div class="form-grid">
+      <div class="ff"><label>Report Type</label>
+        <select><option>Revenue Report</option><option>User Report</option><option>eSIM Usage Report</option><option>Provider Performance</option><option>Campaign ROI</option></select></div>
+      <div class="ff"><label>Date Range</label>
+        <select><option>Last 7 days</option><option>Last 30 days</option><option>Last 3 months</option><option>Custom range</option></select></div>
+      <div class="ff"><label>Group By</label><select><option>Day</option><option>Week</option><option>Month</option><option>Provider</option><option>Country</option></select></div>
+      <div class="ff"><label>Format</label><select><option>Excel (.xlsx)</option><option>CSV (.csv)</option><option>PDF</option></select></div>
+      <div class="ff full"><label>Filters (optional)</label><input placeholder="e.g. country=JP, provider=Telnyx"></div>
+    </div>
+    <div class="form-actions"><button class="btn btn-a" onclick="generateReport()">📊 Generate Report</button></div>
+  </div>
+</div>
+
+<!-- ═══════════════ SUPPORT ═══════════════ -->
+<div id="sec-support" class="sec">
+  <div class="pg-head"><div><div class="pg-title">Support</div><div class="pg-sub">Customer tickets, AI chat logs and escalation management</div></div>
+  <div class="pg-actions">
+    <button class="btn btn-ghost btn-sm" onclick="exportCSV('support')">📊 Export</button>
+    <button class="btn btn-a btn-sm" onclick="openModal('ticket-add')">+ New Ticket</button>
+  </div></div>
+  <div class="metric-grid">
+    <div class="metric-card mc-red"><div class="mc-label">Open Tickets</div><div class="mc-value">5</div><div class="mc-trend">2 urgent</div></div>
+    <div class="metric-card mc-blue"><div class="mc-label">Avg Response</div><div class="mc-value">2.4h</div><div class="mc-trend">target: 4h</div></div>
+    <div class="metric-card mc-green"><div class="mc-label">Resolution Rate</div><div class="mc-value">94%</div><div class="mc-trend"><span class="up">↑ 2%</span></div></div>
+    <div class="metric-card mc-amber"><div class="mc-label">AI Handled</div><div class="mc-value">67%</div><div class="mc-trend">of all chats</div></div>
+  </div>
+  <div class="tbl-wrap">
+    <div class="tbl-head">
+      <div class="tbl-head-left"><h3>Tickets</h3>
+        <input class="tbl-search" placeholder="Search tickets..." oninput="filterTable('support-tbl',this.value)">
+        <select class="tbl-filter"><option value="">All Status</option><option>open</option><option>in_progress</option><option>resolved</option><option>closed</option></select>
+        <select class="tbl-filter"><option value="">All Priority</option><option>urgent</option><option>high</option><option>medium</option><option>low</option></select>
+      </div>
+      <div class="tbl-actions"><button class="btn btn-ghost btn-sm" onclick="exportCSV('support')">📊</button></div>
+    </div>
+    <table><thead><tr>
+      <th><input type="checkbox" class="cb-all" onchange="selectAll('support-tbl',this)"></th>
+      <th>Ticket #</th><th>User</th><th>Subject</th><th>Channel</th><th>Priority</th><th>Assigned To</th><th>Created</th><th>Status</th><th>Actions</th>
+    </tr></thead>
+    <tbody id="support-tbl"></tbody></table>
+    <div class="tbl-footer"><span id="support-count">Loading...</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════ SETTINGS ═══════════════ -->
+<div id="sec-settings" class="sec">
+  <div class="pg-head"><div><div class="pg-title">Settings</div><div class="pg-sub">Platform configuration, API keys and integrations</div></div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+    <div>
+      <div class="form-card">
+        <h3>🔌 eSIM Providers</h3>
+        <div class="ff"><label>eSIM Access API Key</label><input type="password" id="s-esim-key" value="ea_sandbox_demo" placeholder="ea_live_..."></div>
+        <div class="ff"><label>eSIM Access Base URL</label><input id="s-esim-url" value="https://api.esimaccess.com/api/v1"></div>
+        <div class="ff"><label>Telnyx API Key</label><input type="password" placeholder="KEY_..."></div>
+        <div class="ff"><label>Zendit API Key</label><input type="password" placeholder="zen_..."></div>
+        <div class="form-actions"><button class="btn btn-a btn-sm" onclick="saveSettings('providers')">💾 Save</button><button class="btn btn-ghost btn-sm" onclick="testProviders()">🔬 Test Connection</button></div>
+      </div>
+      <div class="form-card">
+        <h3>💳 Stripe</h3>
+        <div class="ff"><label>Secret Key</label><input type="password" id="s-stripe-key" placeholder="sk_live_..."></div>
+        <div class="ff"><label>Publishable Key</label><input placeholder="pk_live_..."></div>
+        <div class="ff"><label>Webhook Secret</label><input type="password" placeholder="whsec_..."></div>
+        <div class="ff"><label>Webhook URL (read-only)</label><input value="https://api.primesim.co/webhooks/stripe" readonly style="color:var(--ink3)"></div>
+        <div class="form-actions"><button class="btn btn-a btn-sm" onclick="saveSettings('stripe')">💾 Save</button></div>
+      </div>
+      <div class="form-card">
+        <h3>🤖 AI & Auth</h3>
+        <div class="ff"><label>Anthropic API Key</label><input type="password" placeholder="sk-ant-..."></div>
+        <div class="ff"><label>AI Model</label><select><option>claude-sonnet-4-6</option><option>claude-opus-4-6</option></select></div>
+        <div class="ff"><label>Google OAuth Client ID</label><input placeholder="xxx.apps.googleusercontent.com"></div>
+        <div class="ff"><label>Google Client Secret</label><input type="password" placeholder="GOCSPX-..."></div>
+        <div class="ff"><label>Apple Team ID</label><input placeholder="XXXXXXXXXX"></div>
+        <div class="ff"><label>Apple Key ID</label><input placeholder="XXXXXXXXXX"></div>
+        <div class="form-actions"><button class="btn btn-a btn-sm" onclick="saveSettings('auth')">💾 Save</button></div>
+      </div>
+    </div>
+    <div>
+      <div class="form-card">
+        <h3>⚙️ Platform Toggles</h3>
+        <div class="toggle-row"><div class="toggle" id="t-maintenance" onclick="this.classList.toggle('on');saveToggle('maintenance',this)"></div><div><div class="toggle-lbl">Maintenance Mode</div><div class="toggle-sub">Redirects all traffic to maintenance page</div></div></div>
+        <div class="toggle-row"><div class="toggle" id="t-testmode" onclick="this.classList.toggle('on');saveToggle('testmode',this)"></div><div><div class="toggle-lbl">Test Mode (Stripe Sandbox)</div><div class="toggle-sub">Uses test API keys instead of live</div></div></div>
+        <div class="toggle-row"><div class="toggle on" id="t-chatbot" onclick="this.classList.toggle('on');saveToggle('chatbot',this)"></div><div><div class="toggle-lbl">AI Chatbot</div><div class="toggle-sub">Enable Claude AI chatbot on SuperApp</div></div></div>
+        <div class="toggle-row"><div class="toggle on" id="t-registration" onclick="this.classList.toggle('on');saveToggle('registration',this)"></div><div><div class="toggle-lbl">User Registration</div><div class="toggle-sub">Allow new user signups</div></div></div>
+        <div class="toggle-row"><div class="toggle on" id="t-campaigns" onclick="this.classList.toggle('on');saveToggle('campaigns',this)"></div><div><div class="toggle-lbl">Campaign System</div><div class="toggle-sub">Enable coupon codes and promotions</div></div></div>
+        <div class="toggle-row"><div class="toggle on" id="t-reviews" onclick="this.classList.toggle('on');saveToggle('reviews',this)"></div><div><div class="toggle-lbl">User Reviews</div><div class="toggle-sub">Allow users to leave plan reviews</div></div></div>
+      </div>
+      <div class="form-card">
+        <h3>🔐 Admin Access</h3>
+        <div class="ff"><label>Current Password</label><input type="password" placeholder="••••••••"></div>
+        <div class="ff"><label>New Password</label><input type="password" id="new-pass" placeholder="min 12 characters"></div>
+        <div class="ff"><label>Confirm Password</label><input type="password" placeholder="repeat new password"></div>
+        <div class="form-actions"><button class="btn btn-a btn-sm" onclick="changePassword()">🔒 Update Password</button></div>
+      </div>
+      <div class="form-card">
+        <h3>🌐 Domain & Deploy</h3>
+        <div class="ff"><label>App URL</label><input value="https://app.primesim.co" readonly style="color:var(--ink3)"></div>
+        <div class="ff"><label>Admin URL</label><input value="https://admin.primesim.co" readonly style="color:var(--ink3)"></div>
+        <div class="ff"><label>API URL</label><input value="https://api.primesim.co" readonly style="color:var(--ink3)"></div>
+        <div class="form-actions">
+          <button class="btn btn-ghost btn-sm" onclick="checkDomains()">🔍 Check DNS</button>
+          <button class="btn btn-ghost btn-sm" onclick="checkSSL()">🔒 Check SSL</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    </div><!-- /content -->
+  </div><!-- /main-area -->
+</div><!-- /app -->
+
+<!-- MODALS -->
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toasts"></div>
+
+<script>
+/* ════════════════════════════════════════════════════
+   DATA
+════════════════════════════════════════════════════ */
+const DB = {
+  orders:[
+    {id:'ORD-7291',user:'john.doe@email.com',plan:'🇩🇪 Germany 10GB',amt:18,prov:'Telnyx',iccid:'8901420000000002',coupon:'',status:'active',date:'2026-03-15 14:22'},
+    {id:'ORD-7290',user:'sara.m@email.com',plan:'🇯🇵 Japan 5GB',amt:12,prov:'eSIM Access',iccid:'8901420000000001',coupon:'PRIME20',status:'active',date:'2026-03-15 13:51'},
+    {id:'ORD-7289',user:'mike.k@email.com',plan:'🇺🇸 USA 3GB',amt:9,prov:'eSIM Access',iccid:'8901420000000003',coupon:'',status:'active',date:'2026-03-15 12:18'},
+    {id:'ORD-7288',user:'lisa.r@email.com',plan:'🌍 Global 1GB/d',amt:45,prov:'eSIM Access',iccid:'8901420000000008',coupon:'SUMMER30',status:'active',date:'2026-03-15 11:40'},
+    {id:'ORD-7287',user:'david.l@email.com',plan:'🇹🇭 Thailand 8GB',amt:14,prov:'Zendit',iccid:'8901420000000004',coupon:'',status:'pending',date:'2026-03-15 10:22'},
+    {id:'ORD-7286',user:'ana.s@email.com',plan:'🇫🇷 France 5GB',amt:11,prov:'Telnyx',iccid:'8901420000000005',coupon:'WELCOME10',status:'refunded',date:'2026-03-14 18:30'},
+    {id:'ORD-7285',user:'carlos.m@email.com',plan:'🇪🇸 Spain 20GB',amt:22,prov:'eSIM Access',iccid:'8901420000000011',coupon:'',status:'active',date:'2026-03-14 16:45'},
+    {id:'ORD-7284',user:'yuki.t@email.com',plan:'🇰🇷 Korea 10GB',amt:16,prov:'Telnyx',iccid:'8901420000000009',coupon:'BUSINESS25',status:'active',date:'2026-03-14 14:10'},
+    {id:'ORD-7283',user:'ahmed.h@email.com',plan:'🇸🇦 Saudi 5GB',amt:14,prov:'eSIM Access',iccid:'8901420000000016',coupon:'',status:'active',date:'2026-03-14 12:05'},
+    {id:'ORD-7282',user:'nina.p@email.com',plan:'🇮🇹 Italy 5GB',amt:11,prov:'Telnyx',iccid:'8901420000000013',coupon:'',status:'cancelled',date:'2026-03-14 09:30'},
+    {id:'ORD-7281',user:'tom.w@email.com',plan:'🇦🇺 Australia 5GB',amt:13,prov:'Telnyx',iccid:'8901420000000012',coupon:'FLASH40',status:'active',date:'2026-03-13 22:14'},
+    {id:'ORD-7280',user:'priya.n@email.com',plan:'🇮🇳 India 3GB',amt:7,prov:'eSIM Access',iccid:'8901420000000014',coupon:'',status:'active',date:'2026-03-13 19:55'},
+  ],
+  esims:[
+    {iccid:'8901420000000002',user:'john.doe@email.com',plan:'🇩🇪 Germany 10GB',total:10,used:3.2,prov:'Telnyx',expires:'2026-04-14',status:'active'},
+    {iccid:'8901420000000001',user:'sara.m@email.com',plan:'🇯🇵 Japan 5GB',total:5,used:4.5,prov:'eSIM Access',expires:'2026-03-30',status:'active'},
+    {iccid:'8901420000000003',user:'mike.k@email.com',plan:'🇺🇸 USA 3GB',total:3,used:2.8,prov:'eSIM Access',expires:'2026-03-22',status:'active'},
+    {iccid:'8901420000000008',user:'lisa.r@email.com',plan:'🌍 Global 1GB/d',total:30,used:8.1,prov:'eSIM Access',expires:'2026-04-14',status:'active'},
+    {iccid:'8901420000000004',user:'david.l@email.com',plan:'🇹🇭 Thailand 8GB',total:8,used:0,prov:'Zendit',expires:'2026-04-14',status:'pending'},
+    {iccid:'8901420000000005',user:'carlos.m@email.com',plan:'🇪🇸 Spain 20GB',total:20,used:20,prov:'eSIM Access',expires:'2026-03-01',status:'expired'},
+  ],
+  users:[
+    {id:'USR-001',name:'John Doe',email:'john.doe@email.com',country:'🇩🇪 Germany',orders:4,spent:72,segment:'Regular',auth:'Google',reg:'2026-01-15',status:'active'},
+    {id:'USR-002',name:'Sara Martinez',email:'sara.m@email.com',country:'🇪🇸 Spain',orders:12,spent:183,segment:'VIP',auth:'Email',reg:'2025-10-22',status:'active'},
+    {id:'USR-003',name:'Mike Kim',email:'mike.k@email.com',country:'🇰🇷 Korea',orders:2,spent:21,segment:'New',auth:'Apple',reg:'2026-03-10',status:'active'},
+    {id:'USR-004',name:'Lisa Chen',email:'lisa.r@email.com',country:'🇺🇸 USA',orders:7,spent:124,segment:'VIP',auth:'Google',reg:'2025-06-30',status:'active'},
+    {id:'USR-005',name:'David Lopez',email:'david.l@email.com',country:'🇲🇽 Mexico',orders:1,spent:14,segment:'New',auth:'Email',reg:'2026-03-14',status:'active'},
+    {id:'USR-006',name:'Ana Silva',email:'ana.s@email.com',country:'🇧🇷 Brazil',orders:3,spent:42,segment:'Regular',auth:'Email',reg:'2025-12-05',status:'active'},
+    {id:'USR-007',name:'Carlos Ruiz',email:'carlos.m@email.com',country:'🇲🇽 Mexico',orders:5,spent:78,segment:'Regular',auth:'Google',reg:'2025-09-18',status:'active'},
+    {id:'USR-008',name:'Yuki Tanaka',email:'yuki.t@email.com',country:'🇯🇵 Japan',orders:9,spent:147,segment:'VIP',auth:'Apple',reg:'2025-08-01',status:'active'},
+    {id:'USR-009',name:'Ahmed Hassan',email:'ahmed.h@email.com',country:'🇸🇦 Saudi',orders:2,spent:28,segment:'New',auth:'Email',reg:'2026-02-20',status:'active'},
+    {id:'USR-010',name:'Nina Petrov',email:'nina.p@email.com',country:'🇷🇺 Russia',orders:6,spent:66,segment:'Regular',auth:'Google',reg:'2025-11-10',status:'inactive'},
+  ],
+  catalog:[
+    {id:'P001',flag:'🇯🇵',country:'Japan',region:'Asia',data:'5GB',days:15,speed:'5G',prov:'eSIM Access',wholesale:7.20,retail:12,status:'active'},
+    {id:'P002',flag:'🇩🇪',country:'Germany',region:'Europe',data:'10GB',days:30,speed:'5G',prov:'Telnyx',wholesale:10.80,retail:18,status:'active'},
+    {id:'P003',flag:'🇺🇸',country:'USA',region:'Americas',data:'3GB',days:7,speed:'5G',prov:'eSIM Access',wholesale:5.40,retail:9,status:'active'},
+    {id:'P004',flag:'🇹🇭',country:'Thailand',region:'Asia',data:'8GB',days:30,speed:'4G',prov:'Zendit',wholesale:8.40,retail:14,status:'active'},
+    {id:'P005',flag:'🇫🇷',country:'France',region:'Europe',data:'5GB',days:15,speed:'5G',prov:'Telnyx',wholesale:6.60,retail:11,status:'active'},
+    {id:'P006',flag:'🇦🇪',country:'UAE',region:'MENA',data:'5GB',days:10,speed:'5G',prov:'eSIM Access',wholesale:9.60,retail:16,status:'active'},
+    {id:'P007',flag:'🇧🇷',country:'Brazil',region:'Americas',data:'3GB',days:15,speed:'4G',prov:'Zendit',wholesale:6.00,retail:10,status:'active'},
+    {id:'P008',flag:'🌍',country:'Global',region:'Global',data:'1GB/day',days:30,speed:'5G',prov:'eSIM Access',wholesale:27.00,retail:45,status:'active'},
+    {id:'P009',flag:'🇰🇷',country:'South Korea',region:'Asia',data:'10GB',days:30,speed:'5G',prov:'Telnyx',wholesale:9.60,retail:16,status:'active'},
+    {id:'P010',flag:'🇹🇷',country:'Turkey',region:'Europe',data:'10GB',days:30,speed:'5G',prov:'eSIM Access',wholesale:4.80,retail:8,status:'active'},
+    {id:'P011',flag:'🇪🇸',country:'Spain',region:'Europe',data:'20GB',days:30,speed:'5G',prov:'eSIM Access',wholesale:13.20,retail:22,status:'active'},
+    {id:'P012',flag:'🇦🇺',country:'Australia',region:'Asia',data:'5GB',days:14,speed:'5G',prov:'Telnyx',wholesale:7.80,retail:13,status:'active'},
+    {id:'P013',flag:'🇮🇹',country:'Italy',region:'Europe',data:'5GB',days:15,speed:'5G',prov:'Telnyx',wholesale:6.60,retail:11,status:'active'},
+    {id:'P014',flag:'🇮🇳',country:'India',region:'Asia',data:'3GB',days:7,speed:'4G',prov:'eSIM Access',wholesale:4.20,retail:7,status:'active'},
+    {id:'P015',flag:'🇲🇽',country:'Mexico',region:'Americas',data:'5GB',days:15,speed:'4G',prov:'Zendit',wholesale:6.00,retail:10,status:'active'},
+    {id:'P016',flag:'🇸🇦',country:'Saudi Arabia',region:'MENA',data:'5GB',days:10,speed:'5G',prov:'eSIM Access',wholesale:8.40,retail:14,status:'active'},
+  ],
+  campaigns:[
+    {name:'Summer Deals 2025',type:'Percentage',disc:'30%',target:'All Users',used:334,limit:500,revenue:12400,roi:312,expires:'2025-08-31',status:'active'},
+    {name:'Business Bundle',type:'Percentage',disc:'25%',target:'B2B',used:68,limit:200,revenue:8900,roi:280,expires:'2026-06-30',status:'active'},
+    {name:'Flash Sale Europe',type:'Percentage',disc:'40%',target:'Europe Plans',used:89,limit:100,revenue:3200,roi:195,expires:'2026-03-15',status:'ending'},
+    {name:'Welcome Pack',type:'Percentage',disc:'10%',target:'New Users',used:450,limit:1000,revenue:22100,roi:410,expires:'Always',status:'active'},
+  ],
+  coupons:[
+    {code:'PRIME20',disc:'20%',type:'Percentage',used:127,limit:500,revenue:8400,campaign:'—',expires:'2026-12-31',status:'active'},
+    {code:'WELCOME10',disc:'10%',type:'Percentage',used:450,limit:1000,revenue:22100,campaign:'Welcome Pack',expires:'Always',status:'active'},
+    {code:'SUMMER30',disc:'30%',type:'Percentage',used:334,limit:500,revenue:12400,campaign:'Summer Deals',expires:'2025-08-31',status:'active'},
+    {code:'BUSINESS25',disc:'25%',type:'Percentage',used:68,limit:200,revenue:8900,campaign:'Business Bundle',expires:'2026-06-30',status:'active'},
+    {code:'FLASH40',disc:'40%',type:'Percentage',used:89,limit:100,revenue:3200,campaign:'Flash Sale',expires:'2026-03-15',status:'ending'},
+    {code:'FREESHIP',disc:'Free Shipping',type:'Fixed',used:12,limit:50,revenue:0,campaign:'—',expires:'2026-06-01',status:'active'},
+  ],
+  support:[
+    {id:'#1091',user:'john.doe@email.com',subject:'eSIM not installing on iPhone 14',channel:'Chat',priority:'urgent',assigned:'AI Bot',created:'2h ago',status:'open'},
+    {id:'#1090',user:'sara.m@email.com',subject:'Refund request — unused eSIM',channel:'Email',priority:'high',assigned:'Unassigned',created:'4h ago',status:'open'},
+    {id:'#1089',user:'mike.k@email.com',subject:'Payment failed — card declined',channel:'Chat',priority:'urgent',assigned:'AI Bot',created:'5h ago',status:'open'},
+    {id:'#1088',user:'lisa.r@email.com',subject:'How to use eSIM in Japan?',channel:'Chat',priority:'low',assigned:'AI Bot',created:'6h ago',status:'ai_handled'},
+    {id:'#1087',user:'carlos.m@email.com',subject:'eSIM not activating after install',channel:'Email',priority:'high',assigned:'Unassigned',created:'8h ago',status:'open'},
+    {id:'#1086',user:'yuki.t@email.com',subject:'Want to add more data',channel:'Chat',priority:'medium',assigned:'Support Team',created:'1d ago',status:'in_progress'},
+    {id:'#1085',user:'ahmed.h@email.com',subject:'Invoice request for company',channel:'Email',priority:'low',assigned:'Support Team',created:'2d ago',status:'resolved'},
+  ],
+  providers:[
+    {id:'esimaccess',name:'eSIM Access',latency:142,uptime:99.98,orders:2847,countries:130,balance:840,status:'healthy',priority:1},
+    {id:'telnyx',name:'Telnyx',latency:98,uptime:99.95,orders:1024,countries:180,balance:0,status:'healthy',priority:2},
+    {id:'zendit',name:'Zendit',latency:211,uptime:99.87,orders:1280,countries:150,balance:0,status:'healthy',priority:3},
+  ],
+  finance:[
+    {month:'Mar 2026',revenue:84291,cost:42000,stripe:2528,refunds:1012,profit:38751,margin:46.0},
+    {month:'Feb 2026',revenue:64112,cost:32100,stripe:1923,refunds:756,profit:29333,margin:45.7},
+    {month:'Jan 2026',revenue:48900,cost:24500,stripe:1467,refunds:620,profit:22313,margin:45.6},
+    {month:'Dec 2025',revenue:71400,cost:35700,stripe:2142,refunds:890,profit:32668,margin:45.8},
+    {month:'Nov 2025',revenue:38200,cost:19100,stripe:1146,refunds:480,profit:17474,margin:45.7},
+    {month:'Oct 2025',revenue:29800,cost:14900,stripe:894,refunds:380,profit:13626,margin:45.7},
+  ],
+  suppliers:[
+    {name:'RedteaGO',countries:120,plans:85,volume:'$18k/mo',avgprice:'$1.20/GB',contract:'Annual',status:'active'},
+    {name:'iBASIS',countries:95,plans:64,volume:'$12k/mo',avgprice:'$1.45/GB',contract:'Monthly',status:'active'},
+    {name:'BICS',countries:140,plans:92,volume:'$8k/mo',avgprice:'$1.80/GB',contract:'Annual',status:'active'},
+  ],
+  resellers:[
+    {company:'TravelTech Ltd',contact:'travel@tech.com',apikey:'rsl_abc123',commission:'12%',gmv:'$8,400',whitelabel:true,status:'active'},
+    {company:'GoSIM Pro',contact:'hello@gosim.pro',apikey:'rsl_def456',commission:'10%',gmv:'$5,200',whitelabel:false,status:'active'},
+    {company:'NomadConnect',contact:'api@nomad.io',apikey:'rsl_ghi789',commission:'15%',whitelabel:true,gmv:'$12,100',status:'active'},
+  ],
+  notifs:[
+    {title:'Flash Sale — 40% Off!',channel:'Push',sent:'12,847',openrate:'34%',date:'2026-03-14',status:'sent'},
+    {title:'New Japan Plans Available',channel:'Email',sent:'5,234',openrate:'28%',date:'2026-03-10',status:'sent'},
+    {title:'Low Data Alert',channel:'Push',sent:'234',openrate:'67%',date:'2026-03-09',status:'sent'},
+  ],
+};
+
+/* ════════════════════════════════════════════════════
+   AUTH
+════════════════════════════════════════════════════ */
+function doLogin(){
+  const e=document.getElementById('l-email').value.trim();
+  const p=document.getElementById('l-pass').value;
+  if(e==='admin@primesim.co'&&p==='admin2024'){
+    document.getElementById('login').style.display='none';
+    document.getElementById('app').classList.add('show');
+    const n=e.split('@')[0];
+    document.getElementById('sb-av').textContent=n.slice(0,2).toUpperCase();
+    document.getElementById('sb-un').textContent=n.charAt(0).toUpperCase()+n.slice(1);
+    document.getElementById('sb-ue').textContent=e;
+    initAll();
+  } else {
+    document.getElementById('l-err').classList.add('show');
+    document.getElementById('l-pass').value='';
+    setTimeout(()=>document.getElementById('l-err').classList.remove('show'),4000);
+  }
+}
+function doLogout(){
+  document.getElementById('app').classList.remove('show');
+  document.getElementById('login').style.display='flex';
+  document.getElementById('l-pass').value='';
+}
+document.getElementById('l-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+
+/* ════════════════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════════════════ */
+function go(sec,btn){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  const el=document.getElementById('sec-'+sec);
+  if(el)el.classList.add('on');
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  else{document.querySelectorAll('.sb-item').forEach(b=>{if(b.textContent.trim().toLowerCase().startsWith(sec.substring(0,4).toLowerCase()))b.classList.add('on')})}
+  document.getElementById('bread').textContent=sec.charAt(0).toUpperCase()+sec.replace(/-/g,' ').slice(1);
+}
+
+/* ════════════════════════════════════════════════════
+   INIT — render all tables
+════════════════════════════════════════════════════ */
+function initAll(){
+  document.getElementById('dash-date').textContent='PrimeSIM · '+new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  renderRevChart();renderFinanceChart();renderAnalyticsCharts();
+  renderDashOrders();renderOrders();renderESIMs();renderUsers();
+  renderCatalog();renderCampaigns();renderCoupons();renderSupport();
+  renderProviders();renderSuppliers();renderResellers();
+  renderFinance();renderPayouts();renderCommissions();
+  renderNotifs();renderReports();renderSegments();renderRegions();
+  renderAnalytics();renderDashAlerts();
+}
+
+/* ════════════════════════════════════════════════════
+   STATUS HELPERS
+════════════════════════════════════════════════════ */
+function statusBadge(s){
+  const m={active:'badge-green',healthy:'badge-green',active_paid:'badge-green',sent:'badge-green',resolved:'badge-green',
+    pending:'badge-amber',in_progress:'badge-amber',ending:'badge-amber',ai_handled:'badge-blue',
+    refunded:'badge-red',cancelled:'badge-red',inactive:'badge-red',expired:'badge-gray',
+    open:'badge-red',out_of_stock:'badge-amber'};
+  return`<span class="badge ${m[s]||'badge-gray'}">${s.replace(/_/g,' ')}</span>`;
+}
+function priorityBadge(p){
+  const m={urgent:'badge-red',high:'badge-pink',medium:'badge-amber',low:'badge-gray'};
+  return`<span class="badge ${m[p]||'badge-gray'}">${p}</span>`;
+}
+function segBadge(s){
+  const m={VIP:'badge-amber',Regular:'badge-blue',New:'badge-green',Churned:'badge-gray'};
+  return`<span class="badge ${m[s]||'badge-gray'}">${s}</span>`;
+}
+
+/* ════════════════════════════════════════════════════
+   RENDER FUNCTIONS
+════════════════════════════════════════════════════ */
+function renderDashAlerts(){
+  const html=`
+    <div class="alert alert-warn"><span class="alert-icon">⚠️</span><div>eSIM Access balance below $1,000 — top up to avoid interruption.</div><button class="btn btn-warn btn-sm" style="margin-left:auto" onclick="go('settings',null)">Top Up</button></div>
+    <div class="alert alert-info"><span class="alert-icon">ℹ️</span><div>5 support tickets pending response. Oldest ticket: 8 hours.</div><button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="go('support',null)">View Tickets</button></div>`;
+  document.getElementById('dash-alerts').innerHTML=html;
+}
+function renderDashOrders(){
+  document.getElementById('dash-orders').innerHTML=DB.orders.slice(0,6).map(o=>
+    `<tr><td class="td-mono">${o.id}</td><td>${o.user}</td><td>${o.plan}</td><td class="td-primary" style="color:var(--green)">$${o.amt}</td><td>${o.prov}</td><td>${statusBadge(o.status)}</td><td class="td-mono">${o.date.split(' ')[0]}</td></tr>`
+  ).join('');
+}
+function renderRevChart(){
+  const d=[{l:'Mon',v:2100},{l:'Tue',v:2600},{l:'Wed',v:1800},{l:'Thu',v:3200},{l:'Fri',v:2400},{l:'Sat',v:2900},{l:'Sun',v:2847}];
+  const mx=Math.max(...d.map(x=>x.v));
+  document.getElementById('rev-chart').innerHTML=d.map(x=>`
+    <div class="bar-item">
+      <div class="bar-val">$${(x.v/1000).toFixed(1)}k</div>
+      <div class="bar-fill" style="height:${Math.round(x.v/mx*120)}px;background:${x.l==='Sun'?'var(--green)':'rgba(0,200,150,.3)'}"></div>
+      <div class="bar-lbl">${x.l}</div>
+    </div>`).join('');
+}
+function renderFinanceChart(){
+  const d=[{l:'Oct',v:29800,c:14900},{l:'Nov',v:38200,c:19100},{l:'Dec',v:71400,c:35700},{l:'Jan',v:48900,c:24500},{l:'Feb',v:64112,c:32100},{l:'Mar',v:84291,c:42000}];
+  const mx=Math.max(...d.map(x=>x.v));
+  const el=document.getElementById('finance-chart');if(!el)return;
+  el.innerHTML=d.map(x=>`
+    <div class="bar-item" style="flex-direction:column-reverse">
+      <div class="bar-lbl">${x.l}</div>
+      <div style="width:100%;display:flex;gap:2px;align-items:flex-end;height:${Math.round(x.v/mx*130)}px">
+        <div style="flex:1;background:rgba(0,200,150,.3);height:100%;border-radius:3px 3px 0 0"></div>
+        <div style="flex:1;background:rgba(239,68,68,.4);height:${Math.round(x.c/x.v*100)}%;border-radius:3px 3px 0 0"></div>
+      </div>
+    </div>`).join('');
+}
+function renderAnalyticsCharts(){
+  const dau=[{l:'Mon',v:1620},{l:'Tue',v:1890},{l:'Wed',v:1540},{l:'Thu',v:2100},{l:'Fri',v:1780},{l:'Sat',v:1950},{l:'Sun',v:1847}];
+  const mx=Math.max(...dau.map(x=>x.v));
+  const el=document.getElementById('analytics-dau');if(!el)return;
+  el.innerHTML=dau.map(x=>`<div class="bar-item"><div class="bar-val">${x.v}</div><div class="bar-fill" style="height:${Math.round(x.v/mx*120)}px;background:var(--blue)"></div><div class="bar-lbl">${x.l}</div></div>`).join('');
+  const tc=document.getElementById('top-countries');if(!tc)return;
+  const countries=[{f:'🇯🇵',n:'Japan',pct:18},{f:'🇩🇪',n:'Germany',pct:14},{f:'🇺🇸',n:'USA',pct:12},{f:'🇹🇭',n:'Thailand',pct:9},{f:'🇹🇷',n:'Turkey',pct:8}];
+  tc.innerHTML=countries.map(c=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:16px">${c.f}</span><div style="flex:1"><div style="font-size:11px;font-weight:600;margin-bottom:3px">${c.n}</div><div class="progress-bar"><div class="progress-fill" style="width:${c.pct*5}%"></div></div></div><span style="font-size:11px;font-weight:700;color:var(--ink2)">${c.pct}%</span></div>`).join('');
+  const reg=document.getElementById('analytics-regions');if(!reg)return;
+  const regions=[{l:'Europe',v:42},{l:'Asia',v:31},{l:'MENA',v:13},{l:'Americas',v:11},{l:'Global',v:3}];
+  const rmx=Math.max(...regions.map(x=>x.v));
+  reg.innerHTML=regions.map(x=>`<div class="bar-item"><div class="bar-val">${x.v}%</div><div class="bar-fill" style="height:${Math.round(x.v/rmx*120)}px;background:var(--purple)"></div><div class="bar-lbl">${x.l}</div></div>`).join('');
+  const ts=document.getElementById('traffic-sources');if(!ts)return;
+  const sources=[{n:'Direct',pct:35},{n:'Organic',pct:28},{n:'Social',pct:18},{n:'Referral',pct:12},{n:'Email',pct:7}];
+  ts.innerHTML=sources.map(s=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="flex:1"><div style="font-size:11px;font-weight:600;margin-bottom:3px">${s.n}</div><div class="progress-bar"><div class="progress-fill" style="width:${s.pct*2.8}%;background:var(--amber)"></div></div></div><span style="font-size:11px;font-weight:700;color:var(--ink2)">${s.pct}%</span></div>`).join('');
+}
+function renderOrders(){
+  const tb=document.getElementById('orders-tbl');if(!tb)return;
+  tb.innerHTML=DB.orders.map(o=>`
+    <tr>
+      <td><input type="checkbox" class="cb-row" onchange="checkBulk('orders-tbl','bulk-btn')"></td>
+      <td class="td-mono td-primary">${o.id}</td>
+      <td>${o.user}</td>
+      <td>${o.plan}</td>
+      <td style="color:var(--green);font-weight:700">$${o.amt}</td>
+      <td><span class="badge badge-blue">${o.prov}</span></td>
+      <td class="td-mono">${o.iccid}</td>
+      <td>${o.coupon?`<span class="badge badge-purple">${o.coupon}</span>`:'—'}</td>
+      <td>${statusBadge(o.status)}</td>
+      <td class="td-mono">${o.date}</td>
+      <td><div class="td-actions">
+        <button class="btn btn-ghost btn-xs" onclick="viewOrder('${o.id}')">👁</button>
+        <button class="btn btn-ghost btn-xs" onclick="refundOrder('${o.id}')">↩</button>
+        ${o.status==='pending'?`<button class="btn btn-a btn-xs" onclick="provisionOrder('${o.id}')">▶ Provision</button>`:''}
+      </div></td>
+    </tr>`).join('');
+  document.getElementById('orders-count').textContent=`Showing ${DB.orders.length} of ${DB.orders.length} orders`;
+  renderPagination('orders-pg',1,1);
+}
+function renderESIMs(){
+  const tb=document.getElementById('esims-tbl');if(!tb)return;
+  tb.innerHTML=DB.esims.map(e=>{
+    const pct=Math.round((1-e.used/e.total)*100);
+    const col=e.status==='active'&&pct<20?'var(--red)':e.status==='active'?'var(--green)':'var(--ink3)';
+    return`<tr>
+      <td><input type="checkbox" class="cb-row"></td>
+      <td class="td-mono">${e.iccid}</td>
+      <td>${e.user}</td>
+      <td>${e.plan}</td>
+      <td>${e.used.toFixed(1)} GB</td>
+      <td style="font-weight:700;color:${col}">${(e.total-e.used).toFixed(1)} GB</td>
+      <td style="width:80px"><div class="progress-bar"><div class="progress-fill" style="width:${Math.max(0,pct)}%;background:${col}"></div></div><div style="font-size:9px;color:var(--ink3);margin-top:2px">${pct}%</div></td>
+      <td>${e.prov}</td>
+      <td class="td-mono">${e.expires}</td>
+      <td>${statusBadge(e.status)}</td>
+      <td><div class="td-actions">
+        <button class="btn btn-ghost btn-xs" onclick="viewESIM('${e.iccid}')">👁</button>
+        <button class="btn btn-ghost btn-xs" onclick="topUpESIM('${e.iccid}')">+ Top-Up</button>
+        <button class="btn btn-red btn-xs" onclick="revokeESIM('${e.iccid}')">✕</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('esims-count').textContent=`${DB.esims.length} profiles`;
+}
+function renderUsers(){
+  const tb=document.getElementById('users-tbl');if(!tb)return;
+  tb.innerHTML=DB.users.map(u=>`
+    <tr>
+      <td><input type="checkbox" class="cb-row" onchange="checkBulk('users-tbl','user-bulk-btn')"></td>
+      <td><div style="display:flex;align-items:center;gap:7px"><div class="avatar">${u.name.split(' ').map(x=>x[0]).join('')}</div><div class="td-primary">${u.name}</div></div></td>
+      <td style="color:var(--ink3)">${u.email}</td>
+      <td>${u.country}</td>
+      <td style="font-weight:700">${u.orders}</td>
+      <td style="color:var(--green);font-weight:700">$${u.spent}</td>
+      <td>${segBadge(u.segment)}</td>
+      <td><span class="badge badge-gray">${u.auth}</span></td>
+      <td class="td-mono">${u.reg}</td>
+      <td>${statusBadge(u.status)}</td>
+      <td><div class="td-actions">
+        <button class="btn btn-ghost btn-xs" onclick="viewUser('${u.id}')">👁</button>
+        <button class="btn btn-ghost btn-xs" onclick="editUser('${u.id}')">✏️</button>
+        <button class="btn btn-warn btn-xs" onclick="changeSegment('${u.id}')">🏷️</button>
+        <button class="btn btn-red btn-xs" onclick="deleteUser('${u.id}')">✕</button>
+      </div></td>
+    </tr>`).join('');
+  document.getElementById('users-count').textContent=`Showing ${DB.users.length} of 12,847 users`;
+}
+function renderCatalog(){
+  const tb=document.getElementById('catalog-tbl');if(!tb)return;
+  tb.innerHTML=DB.catalog.map(p=>{
+    const margin=Math.round((1-p.wholesale/p.retail)*100);
+    return`<tr>
+      <td><input type="checkbox" class="cb-row" onchange="checkBulk('catalog-tbl','cat-bulk-btn')"></td>
+      <td style="font-size:20px">${p.flag}</td>
+      <td class="td-primary">${p.country}</td>
+      <td><span class="badge badge-gray">${p.region}</span></td>
+      <td style="font-weight:700;color:var(--blue)">${p.data}</td>
+      <td>${p.days}d</td>
+      <td><span class="badge badge-purple">${p.speed}</span></td>
+      <td style="color:var(--ink3)">${p.prov}</td>
+      <td style="color:var(--amber)">$${p.wholesale}</td>
+      <td style="color:var(--green);font-weight:700">$${p.retail}</td>
+      <td><span class="badge ${margin>=40?'badge-green':margin>=30?'badge-amber':'badge-red'}">${margin}%</span></td>
+      <td>${statusBadge(p.status)}</td>
+      <td><div class="td-actions">
+        <button class="btn btn-ghost btn-xs" onclick="editPlan('${p.id}')">✏️</button>
+        <button class="btn btn-ghost btn-xs" onclick="duplicatePlan('${p.id}')">⧉</button>
+        <button class="btn btn-red btn-xs" onclick="deletePlan('${p.id}')">✕</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('catalog-count').textContent=`${DB.catalog.length} plans`;
+}
+function renderCampaigns(){
+  const tb=document.getElementById('campaigns-tbl');if(!tb)return;
+  tb.innerHTML=DB.campaigns.map(c=>`
+    <tr>
+      <td class="td-primary">${c.name}</td>
+      <td>${c.type}</td>
+      <td style="color:var(--green);font-weight:700">${c.disc}</td>
+      <td>${c.target}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span>${c.used}/${c.limit}</span>
+          <div class="progress-bar" style="width:60px"><div class="progress-fill" style="width:${Math.round(c.used/c.limit*100)}%"></div></div>
+        </div>
+      </td>
+      <td style="color:var(--green)">$${c.revenue.toLocaleString()}</td>
+      <td style="color:var(--amber);font-weight:700">${c.roi}%</td>
+      <td class="td-mono">${c.expires}</td>
+      <td>${statusBadge(c.status)}</td>
+      <td><div class="td-actions">
+        <button class="btn btn-ghost btn-xs" onclick="editCampaign('${c.name}')">✏️</button>
+        <button class="btn btn-red btn-xs" onclick="deleteCampaign('${c.name}')">✕</button>
+      </div></td>
+    </tr>`).join('');
+}
+function renderCoupons(){
+  const tb=document.getElementById('coupons-tbl');if(!tb)return;
+  tb.innerHTML=DB.coupons.map(c=>`
+    <tr>
+      <td><input type="checkbox" class="cb-row"></td>
+      <td><code style="background:var(--bg3);padding:2px 7px;border-radius:5px;font-size:11px;color:var(--a);letter-spacing:1px">${c.code}</code></td>
+      <td style="color:var(--green);font-weight:700">${c.disc}</td>
+      <td>${c.type}</td>
+      <td>${c.used}</td>
+      <td>${c.limit}</td>
+      <td style="color:var(--green)">$${c.revenue.toLocaleString()}</td>
+      <td>${c.campaign}</td>
+      <td class="td-mono">${c.expires}</td>
+      <td>${statusBadge(c.status)}</td>
+      <td><div class="td-actions">
+        <button class="btn btn-ghost btn-xs" onclick="editCoupon('${c.code}')">✏️</button>
+        <button class="btn btn-red btn-xs" onclick="deleteCoupon('${c.code}')">✕</button>
+      </div></td>
+    </tr>`).join('');
+}
+function renderSupport(){
+  const tb=document.getElementById('support-tbl');if(!tb)return;
+  tb.innerHTML=DB.support.map(t=>`
+    <tr>
+      <td><input type="checkbox" class="cb-row"></td>
+      <td class="td-mono td-primary">${t.id}</td>
+      <td>${t.user}</td>
+      <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.subject}</td>
+      <td><span class="badge badge-gray">${t.channel}</span></td>
+      <td>${priorityBadge(t.priority)}</td>
+      <td style="color:var(--ink3)">${t.assigned}</td>
+      <td class="td-mono">${t.created}</td>
+      <td>${statusBadge(t.status)}</td>
+      <td><div class="td-actions">
+        <button class="btn btn-a btn-xs" onclick="replyTicket('${t.id}')">Reply</button>
+        <button class="btn btn-ghost btn-xs" onclick="assignTicket('${t.id}')">Assign</button>
+        <button class="btn btn-ghost btn-xs" onclick="resolveTicket('${t.id}')">✓</button>
+      </div></td>
+    </tr>`).join('');
+  document.getElementById('support-count').textContent=`${DB.support.filter(t=>t.status==='open').length} open · ${DB.support.length} total`;
+}
+function renderProviders(){
+  const el=document.getElementById('provider-cards');if(!el)return;
+  el.innerHTML=DB.providers.map(p=>`
+    <div class="form-card" style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:36px;height:36px;background:var(--a3);border-radius:8px;display:grid;place-items:center;font-size:18px">🔌</div>
+          <div><div style="font-size:14px;font-weight:800">${p.name}</div><div style="font-size:10px;color:var(--ink3)">Priority ${p.priority}</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge badge-green">● ${p.status}</span>
+          <button class="btn btn-ghost btn-sm" onclick="editProvider('${p.id}')">⚙️ Configure</button>
+          <button class="btn btn-red btn-sm" onclick="removeProvider('${p.id}')">Remove</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px">
+        <div style="background:var(--bg3);border-radius:7px;padding:9px 11px">
+          <div style="font-size:10px;color:var(--ink3);margin-bottom:3px">Latency</div>
+          <div style="font-size:16px;font-weight:800;color:${p.latency<150?'var(--green)':'var(--amber)'}">${p.latency}ms</div>
+        </div>
+        <div style="background:var(--bg3);border-radius:7px;padding:9px 11px">
+          <div style="font-size:10px;color:var(--ink3);margin-bottom:3px">Uptime</div>
+          <div style="font-size:16px;font-weight:800;color:var(--green)">${p.uptime}%</div>
+        </div>
+        <div style="background:var(--bg3);border-radius:7px;padding:9px 11px">
+          <div style="font-size:10px;color:var(--ink3);margin-bottom:3px">Orders/mo</div>
+          <div style="font-size:16px;font-weight:800;color:var(--blue)">${p.orders.toLocaleString()}</div>
+        </div>
+        <div style="background:var(--bg3);border-radius:7px;padding:9px 11px">
+          <div style="font-size:10px;color:var(--ink3);margin-bottom:3px">Countries</div>
+          <div style="font-size:16px;font-weight:800">${p.countries}+</div>
+        </div>
+        <div style="background:var(--bg3);border-radius:7px;padding:9px 11px">
+          <div style="font-size:10px;color:var(--ink3);margin-bottom:3px">${p.id==='esimaccess'?'Balance':'Failover'}</div>
+          <div style="font-size:16px;font-weight:800;color:${p.id==='esimaccess'&&p.balance<1000?'var(--red)':'var(--green)'}">${p.id==='esimaccess'?'$'+p.balance:'Auto'}</div>
+        </div>
+      </div>
+    </div>`).join('');
+  const log=document.getElementById('provider-log');if(!log)return;
+  log.innerHTML=[
+    {prov:'eSIM Access',metric:'Order Success Rate',val:'99.2%',period:'Last 7d',trend:'↑'},
+    {prov:'Telnyx',metric:'Avg Provision Time',val:'2.3s',period:'Last 7d',trend:'↑'},
+    {prov:'Zendit',metric:'Error Rate',val:'0.8%',period:'Last 7d',trend:'↓'},
+    {prov:'eSIM Access',metric:'Monthly Orders',val:'2,847',period:'Mar 2026',trend:'↑'},
+    {prov:'Telnyx',metric:'Uptime',val:'99.95%',period:'Last 30d',trend:'→'},
+  ].map(r=>`<tr><td class="td-primary">${r.prov}</td><td>${r.metric}</td><td style="font-weight:700;color:var(--green)">${r.val}</td><td class="td-mono">${r.period}</td><td>${r.trend==='↑'?'<span style="color:var(--green)">↑ improving</span>':r.trend==='↓'?'<span style="color:var(--red)">↓ declining</span>':'<span style="color:var(--ink2)">→ stable</span>'}</td></tr>`).join('');
+}
+function renderSuppliers(){
+  const tb=document.getElementById('suppliers-tbl');if(!tb)return;
+  tb.innerHTML=DB.suppliers.map(s=>`
+    <tr><td class="td-primary">${s.name}</td><td>${s.countries}</td><td>${s.plans}</td><td style="color:var(--green)">${s.volume}</td><td>${s.avgprice}</td><td>${s.contract}</td><td>${statusBadge(s.status)}</td>
+    <td><div class="td-actions"><button class="btn btn-ghost btn-xs" onclick="viewSupplier('${s.name}')">👁</button><button class="btn btn-ghost btn-xs">✏️</button><button class="btn btn-red btn-xs">✕</button></div></td></tr>`).join('');
+}
+function renderResellers(){
+  const tb=document.getElementById('resellers-tbl');if(!tb)return;
+  tb.innerHTML=DB.resellers.map(r=>`
+    <tr>
+      <td class="td-primary">${r.company}</td>
+      <td style="color:var(--ink3)">${r.contact}</td>
+      <td><code style="background:var(--bg3);padding:2px 7px;border-radius:4px;font-size:10px;color:var(--ink3)">${r.apikey}</code>
+        <button class="btn btn-ghost btn-xs" style="margin-left:4px" onclick="rotateKey('${r.company}')">↻</button></td>
+      <td style="color:var(--amber);font-weight:700">${r.commission}</td>
+      <td style="color:var(--green)">${r.gmv}</td>
+      <td>${r.whitelabel?'<span class="badge badge-purple">Yes</span>':'<span class="badge badge-gray">No</span>'}</td>
+      <td>${statusBadge(r.status)}</td>
+      <td><div class="td-actions">
+        <button class="btn btn-ghost btn-xs" onclick="editReseller('${r.company}')">✏️</button>
+        <button class="btn btn-warn btn-xs" onclick="payCommission('${r.company}')">💸 Pay</button>
+        <button class="btn btn-red btn-xs">✕</button>
+      </div></td>
+    </tr>`).join('');
+}
+function renderFinance(){
+  const tb=document.getElementById('finance-tbl');if(!tb)return;
+  tb.innerHTML=DB.finance.map((f,i)=>{
+    const prev=DB.finance[i+1];
+    const vs=prev?((f.revenue-prev.revenue)/prev.revenue*100).toFixed(1):null;
+    return`<tr>
+      <td class="td-primary">${f.month}</td>
+      <td style="color:var(--green);font-weight:700">$${f.revenue.toLocaleString()}</td>
+      <td style="color:var(--red)">$${f.cost.toLocaleString()}</td>
+      <td style="color:var(--amber)">$${f.stripe.toLocaleString()}</td>
+      <td style="color:var(--red)">$${f.refunds}</td>
+      <td style="color:var(--blue);font-weight:700">$${f.profit.toLocaleString()}</td>
+      <td><span class="badge ${f.margin>=45?'badge-green':'badge-amber'}">${f.margin}%</span></td>
+      <td>${vs?`<span style="color:${vs>=0?'var(--green)':'var(--red)'};font-weight:700">${vs>=0?'↑':'↓'} ${Math.abs(vs)}%</span>`:'—'}</td>
+    </tr>`;
+  }).join('');
+}
+function renderPayouts(){
+  const tb=document.getElementById('payouts-tbl');if(!tb)return;
+  const data=[
+    {id:'pi_3Ox...',amt:18,fee:0.82,net:17.18,type:'charge',customer:'john.doe@email.com',date:'2026-03-15',status:'succeeded'},
+    {id:'pi_3Ow...',amt:12,fee:0.65,net:11.35,type:'charge',customer:'sara.m@email.com',date:'2026-03-15',status:'succeeded'},
+    {id:'re_3Ov...',amt:-11,fee:0,net:-11,type:'refund',customer:'ana.s@email.com',date:'2026-03-14',status:'succeeded'},
+    {id:'pi_3Ou...',amt:45,fee:1.61,net:43.39,type:'charge',customer:'lisa.r@email.com',date:'2026-03-14',status:'succeeded'},
+    {id:'pi_3Ot...',amt:14,fee:0.71,net:13.29,type:'charge',customer:'david.l@email.com',date:'2026-03-14',status:'processing'},
+  ];
+  tb.innerHTML=data.map(t=>`<tr>
+    <td class="td-mono">${t.id}</td>
+    <td style="color:${t.amt>0?'var(--green)':'var(--red)'};font-weight:700">${t.amt>0?'+':''}$${Math.abs(t.amt)}</td>
+    <td style="color:var(--amber)">$${t.fee}</td>
+    <td style="font-weight:700">$${t.net.toFixed(2)}</td>
+    <td><span class="badge ${t.type==='charge'?'badge-blue':'badge-amber'}">${t.type}</span></td>
+    <td>${t.customer}</td>
+    <td class="td-mono">${t.date}</td>
+    <td>${statusBadge(t.status)}</td>
+  </tr>`).join('');
+}
+function renderCommissions(){
+  const tb=document.getElementById('commissions-tbl');if(!tb)return;
+  DB.resellers.forEach(r=>{
+    const row=document.createElement('tr');
+    row.innerHTML=`<td class="td-primary">${r.company}</td><td>142</td><td style="color:var(--green)">$${r.gmv}</td><td style="color:var(--amber)">${r.commission}</td><td style="color:var(--amber);font-weight:700">$${(parseInt(r.gmv.replace(/\D/g,''))*parseInt(r.commission)/100).toLocaleString()}</td><td class="td-mono">Mar 2026</td><td><span class="badge badge-amber">Pending</span></td><td><div class="td-actions"><button class="btn btn-a btn-xs" onclick="payCommission('${r.company}')">💸 Pay</button></div></td>`;
+    tb.appendChild(row);
+  });
+}
+function renderNotifs(){
+  const tb=document.getElementById('notif-tbl');if(!tb)return;
+  tb.innerHTML=DB.notifs.map(n=>`<tr><td class="td-primary">${n.title}</td><td><span class="badge badge-blue">${n.channel}</span></td><td>${n.sent}</td><td style="color:var(--green)">${n.openrate}</td><td class="td-mono">${n.date}</td><td>${statusBadge(n.status)}</td></tr>`).join('');
+}
+function renderReports(){
+  const el=document.getElementById('reports-grid');if(!el)return;
+  const reports=[
+    {name:'Revenue Report',icon:'💰',desc:'Monthly revenue, costs and margins'},
+    {name:'User Report',icon:'👥',desc:'User growth, retention and LTV'},
+    {name:'eSIM Usage Report',icon:'📶',desc:'Data usage and plan performance'},
+    {name:'Provider Performance',icon:'🔌',desc:'Latency, uptime and error rates'},
+    {name:'Campaign ROI',icon:'🎯',desc:'Campaign performance and ROI analysis'},
+    {name:'Coupon Analysis',icon:'🎟️',desc:'Coupon usage and redemption rates'},
+    {name:'Support Report',icon:'🎧',desc:'Ticket volume and resolution metrics'},
+    {name:'Financial Summary',icon:'📊',desc:'Full P&L and balance sheet'},
+    {name:'Reseller Report',icon:'🤝',desc:'Partner GMV and commission summary'},
+  ];
+  el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">` + reports.map(r=>`
+    <div class="form-card" style="margin-bottom:0;cursor:pointer;transition:border-color .15s" onmouseover="this.style.borderColor='var(--a)'" onmouseout="this.style.borderColor=''">
+      <div style="font-size:24px;margin-bottom:8px">${r.icon}</div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:4px">${r.name}</div>
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:12px">${r.desc}</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-ghost btn-sm" onclick="exportCSV('${r.name}')">📊 Excel</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportPDF('${r.name}')">📄 PDF</button>
+      </div>
+    </div>`).join('') + '</div>';
+}
+function renderSegments(){
+  const el=document.getElementById('segments-list');if(!el)return;
+  const segs=[
+    {name:'VIP',color:'badge-amber',count:847,criteria:'Orders ≥ 5 OR Spent ≥ $100',desc:'High-value repeat customers'},
+    {name:'Regular',color:'badge-blue',count:8200,criteria:'Orders 2-4, Spent $20-99',desc:'Core customer base'},
+    {name:'New',color:'badge-green',count:3200,criteria:'Registered < 30 days',desc:'Recently joined users'},
+    {name:'Churned',color:'badge-gray',count:600,criteria:'No orders in 90+ days',desc:'Inactive users for re-engagement'},
+  ];
+  el.innerHTML=segs.map(s=>`
+    <div class="form-card" style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="badge ${s.color}" style="font-size:12px;padding:4px 12px">${s.name}</span>
+          <div style="font-size:22px;font-weight:800;color:var(--ink)">${s.count.toLocaleString()} users</div>
+        </div>
+        <div style="display:flex;gap:7px">
+          <button class="btn btn-ghost btn-sm" onclick="sendToSegment('${s.name}')">📤 Send Notification</button>
+          <button class="btn btn-ghost btn-sm" onclick="editSegment('${s.name}')">✏️ Edit</button>
+          <button class="btn btn-red btn-sm">✕</button>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--ink2);margin-bottom:5px">${s.desc}</div>
+      <div style="font-size:11px;color:var(--ink3);font-family:monospace;background:var(--bg3);padding:6px 10px;border-radius:6px">${s.criteria}</div>
+    </div>`).join('');
+}
+function renderRegions(){
+  const el=document.getElementById('regions-cards');if(!el)return;
+  const regions=[
+    {name:'Europe',countries:['Germany','France','Spain','Italy','Turkey','Netherlands'],plans:68,icon:'🇪🇺'},
+    {name:'Asia',countries:['Japan','South Korea','Thailand','India','Australia'],plans:72,icon:'🌏'},
+    {name:'Americas',countries:['USA','Brazil','Mexico','Canada','Colombia'],plans:48,icon:'🌎'},
+    {name:'MENA',countries:['UAE','Saudi Arabia','Egypt','Qatar','Israel'],plans:32,icon:'🌍'},
+    {name:'Global',countries:['Worldwide'],plans:8,icon:'🌐'},
+  ];
+  el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">` + regions.map(r=>`
+    <div class="form-card" style="margin-bottom:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-size:22px">${r.icon}</span><div style="font-size:14px;font-weight:800">${r.name}</div></div>
+        <button class="btn btn-ghost btn-xs" onclick="editRegion('${r.name}')">✏️</button>
+      </div>
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:8px">${r.plans} active plans</div>
+      <div class="tag-wrap">${r.countries.map(c=>`<span class="tag">${c}</span>`).join('')}</div>
+    </div>`).join('') + '</div>';
+}
+function renderAnalytics(){
+  const tb=document.getElementById('analytics-plans');if(!tb)return;
+  const plans=[
+    {plan:'🌍 Global 1GB/day',orders:284,revenue:12780,conv:'8.2%',rating:'4.9'},
+    {plan:'🇯🇵 Japan 5GB',orders:241,revenue:2892,conv:'6.4%',rating:'4.8'},
+    {plan:'🇩🇪 Germany 10GB',orders:189,revenue:3402,conv:'5.1%',rating:'4.7'},
+    {plan:'🇺🇸 USA 3GB',orders:167,revenue:1503,conv:'4.8%',rating:'4.6'},
+    {plan:'🇹🇭 Thailand 8GB',orders:148,revenue:2072,conv:'4.2%',rating:'4.8'},
+  ];
+  tb.innerHTML=plans.map(p=>`<tr><td class="td-primary">${p.plan}</td><td>${p.orders}</td><td style="color:var(--green)">$${p.revenue.toLocaleString()}</td><td>${p.conv}</td><td style="color:var(--amber)">⭐ ${p.rating}</td><td style="color:var(--green)">↑ trending</td></tr>`).join('');
+}
+
+/* ════════════════════════════════════════════════════
+   TABLE HELPERS
+════════════════════════════════════════════════════ */
+function filterTable(tbId,q){
+  const rows=document.querySelectorAll(`#${tbId} tr`);
+  rows.forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?'':'none'});
+}
+function filterByStatus(tbId,val){
+  const rows=document.querySelectorAll(`#${tbId} tr`);
+  rows.forEach(r=>{r.style.display=(!val||r.textContent.toLowerCase().includes(val.toLowerCase()))?'':'none'});
+}
+function filterByRegion(tbId,val){filterByStatus(tbId,val)}
+function filterByProvider(tbId,val){filterByStatus(tbId,val)}
+function sortTable(tbId,col){
+  const tb=document.getElementById(tbId);if(!tb)return;
+  const rows=[...tb.querySelectorAll('tr')];
+  rows.sort((a,b)=>{const at=a.cells[col]?.textContent||'',bt=b.cells[col]?.textContent||'';return at.localeCompare(bt,undefined,{numeric:true})});
+  rows.forEach(r=>tb.appendChild(r));
+}
+function selectAll(tbId,cb){
+  document.querySelectorAll(`#${tbId} .cb-row`).forEach(c=>{c.checked=cb.checked});
+}
+function checkBulk(tbId,btnId){
+  const any=document.querySelectorAll(`#${tbId} .cb-row:checked`).length>0;
+  const btn=document.getElementById(btnId);
+  if(btn)btn.style.display=any?'flex':'none';
+}
+function renderPagination(elId,cur,total){
+  const el=document.getElementById(elId);if(!el)return;
+  el.innerHTML=[...Array(Math.min(5,total))].map((_,i)=>`<div class="pg-btn${i+1===cur?' on':''}" onclick="this.parentElement.querySelectorAll('.pg-btn').forEach(b=>b.classList.remove('on'));this.classList.add('on')">${i+1}</div>`).join('');
+}
+
+/* ════════════════════════════════════════════════════
+   MODALS
+════════════════════════════════════════════════════ */
+const MODALS = {
+  'order-add': {title:'Manual Order',html:`
+    <div class="form-grid">
+      <div class="ff"><label>User Email</label><input placeholder="user@email.com"></div>
+      <div class="ff"><label>Plan</label><select>${DB.catalog.map(p=>`<option>${p.flag} ${p.country} ${p.data}</option>`).join('')}</select></div>
+      <div class="ff"><label>Amount (USD)</label><input type="number" value="12"></div>
+      <div class="ff"><label>Provider</label><select><option>eSIM Access</option><option>Telnyx</option><option>Zendit</option></select></div>
+      <div class="ff full"><label>Notes</label><input placeholder="Internal notes..."></div>
+    </div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-a" onclick="confirmModal('Order created')">Create Order</button></div>`},
+  'user-add': {title:'Add User',html:`
+    <div class="form-grid">
+      <div class="ff"><label>First Name</label><input placeholder="John"></div>
+      <div class="ff"><label>Last Name</label><input placeholder="Doe"></div>
+      <div class="ff full"><label>Email</label><input type="email" placeholder="john@email.com"></div>
+      <div class="ff"><label>Password</label><input type="password" placeholder="min 8 chars"></div>
+      <div class="ff"><label>Segment</label><select><option>New</option><option>Regular</option><option>VIP</option></select></div>
+      <div class="ff"><label>Country</label><input placeholder="Germany"></div>
+      <div class="ff"><label>Phone</label><input placeholder="+49..."></div>
+      <div class="ff"><label>Auth Method</label><select><option>Email</option><option>Google</option><option>Apple</option></select></div>
+    </div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-a" onclick="confirmModal('User added')">Add User</button></div>`},
+  'user-bulk': {title:'Bulk User Action',html:`
+    <div style="margin-bottom:14px;font-size:12px;color:var(--ink2)">Apply action to all selected users.</div>
+    <div class="ff"><label>Action</label>
+      <select><option>Change Segment</option><option>Send Notification</option><option>Export Selected</option><option>Suspend Accounts</option><option>Delete Accounts</option></select></div>
+    <div class="ff"><label>Value (if applicable)</label><input placeholder="e.g. VIP"></div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-a" onclick="confirmModal('Bulk action applied')">Apply</button></div>`},
+  'plan-add': {title:'Add Plan to Catalog',html:`
+    <div class="form-grid-3">
+      <div class="ff"><label>Country</label><input placeholder="Japan"></div>
+      <div class="ff"><label>Flag Emoji</label><input placeholder="🇯🇵" maxlength="4"></div>
+      <div class="ff"><label>Region</label><select><option>Europe</option><option>Asia</option><option>Americas</option><option>MENA</option><option>Global</option></select></div>
+      <div class="ff"><label>Data Amount</label><input placeholder="5GB"></div>
+      <div class="ff"><label>Duration (days)</label><input type="number" placeholder="15"></div>
+      <div class="ff"><label>Speed</label><select><option>5G</option><option>4G</option><option>3G</option></select></div>
+      <div class="ff"><label>Provider</label><select><option>eSIM Access</option><option>Telnyx</option><option>Zendit</option></select></div>
+      <div class="ff"><label>Wholesale Price ($)</label><input type="number" step="0.01" placeholder="7.20"></div>
+      <div class="ff"><label>Retail Price ($)</label><input type="number" step="0.01" placeholder="12.00"></div>
+      <div class="ff full"><label>Provider Package Code</label><input placeholder="ESIM_ACCESS_JP_5GB_15D"></div>
+      <div class="ff full"><label>Description (optional)</label><textarea placeholder="5GB data plan for Japan, valid 15 days..."></textarea></div>
+    </div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-a" onclick="confirmModal('Plan added to catalog')">Add Plan</button></div>`},
+  'catalog-import': {title:'Bulk Import Plans',html:`
+    <div class="alert alert-info"><span class="alert-icon">ℹ️</span>Upload a CSV file with columns: country, flag, region, data, days, speed, provider, wholesale_price, retail_price, package_code</div>
+    <div class="ff" style="margin-top:12px"><label>CSV File</label><input type="file" accept=".csv"></div>
+    <div class="ff"><label>Provider (override, optional)</label><select><option value="">Auto-detect from CSV</option><option>eSIM Access</option><option>Telnyx</option><option>Zendit</option></select></div>
+    <div class="toggle-row"><div class="toggle on" onclick="this.classList.toggle('on')"></div><span class="toggle-lbl">Skip existing plans (match by country + data + days)</span></div>
+    <div class="toggle-row"><div class="toggle" onclick="this.classList.toggle('on')"></div><span class="toggle-lbl">Deactivate plans not in CSV</span></div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-a" onclick="confirmModal('Import started — check progress in 2 minutes')">Start Import</button></div>`},
+  'bulk-price': {title:'Bulk Price Edit',html:`
+    <div style="font-size:12px;color:var(--ink2);margin-bottom:12px">Apply price changes to all selected plans.</div>
+    <div class="ff"><label>Price Change Type</label>
+      <select id="bp-type" onchange="this.nextElementSibling.style.display=this.value==='fixed'?'none':'block'">
+        <option value="pct_retail">% change on Retail Price</option>
+        <option value="pct_wholesale">% change on Wholesale Price</option>
+        <option value="fixed">Set fixed retail price</option>
+        <option value="margin">Set target margin %</option>
+      </select></div>
+    <div class="ff"><label>Value</label><input type="number" placeholder="e.g. 10 for +10% or -5 for -5%"></div>
+    <div class="ff"><label>Minimum Retail Price ($)</label><input type="number" value="4" placeholder="floor price"></div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-warn" onclick="confirmModal('Prices updated for selected plans')">Apply Price Change</button></div>`},
+  'provider-add': {title:'Add Provider',html:`
+    <div class="form-grid">
+      <div class="ff"><label>Provider Name</label><input placeholder="e.g. iBASIS"></div>
+      <div class="ff"><label>Priority (1=highest)</label><input type="number" value="4" min="1" max="10"></div>
+      <div class="ff full"><label>API Base URL</label><input placeholder="https://api.provider.com/v1"></div>
+      <div class="ff"><label>API Key</label><input type="password" placeholder="••••••••••••"></div>
+      <div class="ff"><label>API Secret (if any)</label><input type="password" placeholder="optional"></div>
+      <div class="ff"><label>Countries Coverage</label><input type="number" placeholder="150"></div>
+      <div class="ff"><label>Authentication Type</label><select><option>API Key Header</option><option>Bearer Token</option><option>Basic Auth</option></select></div>
+      <div class="ff"><label>Webhook URL (incoming)</label><input placeholder="https://api.primesim.co/webhooks/..."></div>
+    </div>
+    <div class="toggle-row"><div class="toggle on" onclick="this.classList.toggle('on')"></div><span class="toggle-lbl">Enable Automatic Failover</span></div>
+    <div class="toggle-row"><div class="toggle on" onclick="this.classList.toggle('on')"></div><span class="toggle-lbl">Active (start routing orders)</span></div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-a" onclick="confirmModal('Provider added')">Add Provider</button></div>`},
+  'campaign-add': {title:'Create Campaign',html:`
+    <div class="form-grid">
+      <div class="ff"><label>Campaign Name</label><input placeholder="Summer Flash Sale 2025"></div>
+      <div class="ff"><label>Type</label><select><option>Percentage Discount</option><option>Fixed Amount Off</option><option>Free Plan</option><option>Bundle</option></select></div>
+      <div class="ff"><label>Discount Value</label><input type="number" placeholder="e.g. 30 for 30%"></div>
+      <div class="ff"><label>Target Audience</label><select><option>All Users</option><option>VIP</option><option>New Users</option><option>Churned Users</option><option>B2B</option></select></div>
+      <div class="ff"><label>Apply To</label><select><option>All Plans</option><option>Europe Only</option><option>Asia Only</option><option>Specific Plans</option></select></div>
+      <div class="ff"><label>Usage Limit</label><input type="number" placeholder="500 (0 = unlimited)"></div>
+      <div class="ff"><label>Start Date</label><input type="date"></div>
+      <div class="ff"><label>End Date</label><input type="date"></div>
+      <div class="ff full"><label>Auto-generate Coupon Code</label><input placeholder="e.g. SUMMER30 (leave blank to auto-generate)"></div>
+    </div>
+    <div class="toggle-row"><div class="toggle on" onclick="this.classList.toggle('on')"></div><span class="toggle-lbl">Active immediately after creation</span></div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-a" onclick="confirmModal('Campaign created')">Create Campaign</button></div>`},
+  'coupon-add': {title:'Add Coupon Code',html:`
+    <div class="form-grid">
+      <div class="ff"><label>Coupon Code</label><input placeholder="PRIME20" style="text-transform:uppercase"></div>
+      <div class="ff"><label>Discount Type</label><select><option>Percentage</option><option>Fixed Amount</option></select></div>
+      <div class="ff"><label>Discount Value</label><input type="number" placeholder="20"></div>
+      <div class="ff"><label>Usage Limit</label><input type="number" placeholder="500"></div>
+      <div class="ff"><label>Expires</label><input type="date"></div>
+      <div class="ff"><label>Linked Campaign</label><select><option value="">None</option>${DB.campaigns.map(c=>`<option>${c.name}</option>`).join('')}</select></div>
+    </div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-a" onclick="confirmModal('Coupon added')">Add Coupon</button></div>`},
+  'coupon-bulk': {title:'Bulk Generate Coupons',html:`
+    <div class="form-grid">
+      <div class="ff"><label>Prefix</label><input placeholder="PRIME" value="PRIME"></div>
+      <div class="ff"><label>Count</label><input type="number" value="100"></div>
+      <div class="ff"><label>Discount %</label><input type="number" value="20"></div>
+      <div class="ff"><label>Expiry Date</label><input type="date"></div>
+      <div class="ff"><label>Suffix Format</label><select><option>Random 6 chars</option><option>Sequential numbers</option><option>UUID</option></select></div>
+      <div class="ff"><label>Linked Campaign</label><select><option value="">None</option>${DB.campaigns.map(c=>`<option>${c.name}</option>`).join('')}</select></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-ghost" onclick="previewCodes()">👁 Preview 3 Codes</button>
+      <button class="btn btn-a" onclick="confirmModal('100 coupons generated — CSV download started')">Generate & Download CSV</button>
+    </div>`},
+  'ticket-add': {title:'Create Support Ticket',html:`
+    <div class="form-grid">
+      <div class="ff"><label>User Email</label><input placeholder="user@email.com"></div>
+      <div class="ff"><label>Channel</label><select><option>Email</option><option>Chat</option><option>Phone</option><option>Internal</option></select></div>
+      <div class="ff full"><label>Subject</label><input placeholder="Brief description of issue"></div>
+      <div class="ff full"><label>Description</label><textarea placeholder="Full description of the issue..."></textarea></div>
+      <div class="ff"><label>Priority</label><select><option>low</option><option>medium</option><option>high</option><option>urgent</option></select></div>
+      <div class="ff"><label>Assign To</label><select><option>Unassigned</option><option>AI Bot</option><option>Support Team</option><option>Admin</option></select></div>
+    </div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-a" onclick="confirmModal('Ticket created')">Create Ticket</button></div>`},
+  'esim-provision': {title:'Provision eSIM',html:`
+    <div class="form-grid">
+      <div class="ff"><label>Order ID</label><input placeholder="ORD-XXXX"></div>
+      <div class="ff"><label>Plan</label><select>${DB.catalog.map(p=>`<option>${p.flag} ${p.country} ${p.data}</option>`).join('')}</select></div>
+      <div class="ff"><label>Provider</label><select><option>eSIM Access</option><option>Telnyx</option><option>Zendit</option></select></div>
+      <div class="ff"><label>User Email</label><input placeholder="user@email.com"></div>
+    </div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-a" onclick="confirmModal('eSIM provisioned — ICCID generated')">▶ Provision</button></div>`},
+  'reseller-add': {title:'Add Reseller',html:`
+    <div class="form-grid">
+      <div class="ff"><label>Company Name</label><input placeholder="TravelTech Ltd"></div>
+      <div class="ff"><label>Contact Email</label><input type="email" placeholder="contact@company.com"></div>
+      <div class="ff"><label>Commission Rate (%)</label><input type="number" value="10" min="1" max="30"></div>
+      <div class="ff"><label>Plan Access</label><select><option>All Plans</option><option>Europe Only</option><option>Custom</option></select></div>
+      <div class="ff full"><label>Notes</label><textarea placeholder="Agreement notes, special conditions..."></textarea></div>
+    </div>
+    <div class="toggle-row"><div class="toggle" onclick="this.classList.toggle('on')"></div><span class="toggle-lbl">White-Label Access</span></div>
+    <div class="toggle-row"><div class="toggle on" onclick="this.classList.toggle('on')"></div><span class="toggle-lbl">Generate API Key automatically</span></div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-a" onclick="confirmModal('Reseller added — API key generated')">Add Reseller</button></div>`},
+  'supplier-add': {title:'Add Supplier',html:`
+    <div class="form-grid">
+      <div class="ff"><label>Supplier Name</label><input placeholder="e.g. RedteaGO"></div>
+      <div class="ff"><label>Countries Coverage</label><input type="number" placeholder="120"></div>
+      <div class="ff"><label>Contact Email</label><input placeholder="partnerships@supplier.com"></div>
+      <div class="ff"><label>Contract Type</label><select><option>Annual</option><option>Monthly</option><option>Per-volume</option></select></div>
+      <div class="ff"><label>Avg Price/GB</label><input placeholder="$1.20"></div>
+      <div class="ff"><label>Minimum Order</label><input placeholder="$0 (no minimum)"></div>
+      <div class="ff full"><label>Notes</label><textarea placeholder="NDA signed, key terms..."></textarea></div>
+    </div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-a" onclick="confirmModal('Supplier added')">Add Supplier</button></div>`},
+  'segment-add': {title:'Create Segment',html:`
+    <div class="ff"><label>Segment Name</label><input placeholder="Power Users"></div>
+    <div class="ff"><label>Color</label><select><option>amber (VIP)</option><option>blue (Regular)</option><option>green (Active)</option><option>red (At Risk)</option></select></div>
+    <div class="ff"><label>Criteria</label><select><option>Orders ≥ N</option><option>Spent ≥ $N</option><option>Registered within N days</option><option>Last order within N days</option><option>Country</option><option>Custom query</option></select></div>
+    <div class="ff"><label>Value</label><input placeholder="e.g. 10"></div>
+    <div class="ff full"><label>Description</label><input placeholder="Internal description of this segment"></div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-a" onclick="confirmModal('Segment created')">Create</button></div>`},
+  'region-add': {title:'Add Region',html:`
+    <div class="ff"><label>Region Name</label><input placeholder="Central Asia"></div>
+    <div class="ff"><label>Icon / Flag</label><input placeholder="🌏" maxlength="4"></div>
+    <div class="ff full"><label>Countries (comma separated)</label><textarea placeholder="Kazakhstan, Uzbekistan, Kyrgyzstan..."></textarea></div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-a" onclick="confirmModal('Region added')">Add Region</button></div>`},
+  'user-import': {title:'Import Users from CSV',html:`
+    <div class="alert alert-info"><span class="alert-icon">ℹ️</span>CSV columns: name, email, country, segment, phone (optional)</div>
+    <div class="ff" style="margin-top:10px"><label>CSV File</label><input type="file" accept=".csv"></div>
+    <div class="toggle-row"><div class="toggle on" onclick="this.classList.toggle('on')"></div><span class="toggle-lbl">Skip duplicates (match by email)</span></div>
+    <div class="toggle-row"><div class="toggle" onclick="this.classList.toggle('on')"></div><span class="toggle-lbl">Send welcome email to new users</span></div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-a" onclick="confirmModal('Import started')">Import</button></div>`},
+};
+
+function openModal(key){
+  const m=MODALS[key];
+  if(!m)return;
+  document.getElementById('modal-content').innerHTML=`<h2>${m.title}</h2>${m.html}`;
+  document.getElementById('modal-bg').classList.add('open');
+}
+function closeModal(){document.getElementById('modal-bg').classList.remove('open')}
+function confirmModal(msg){
+  closeModal();
+  showToast(msg,'success');
+}
+
+/* ════════════════════════════════════════════════════
+   ACTIONS
+════════════════════════════════════════════════════ */
+function viewOrder(id){openModal('order-add');document.querySelector('#modal-content h2').textContent='Order Details — '+id}
+function refundOrder(id){if(confirm(`Issue refund for ${id}?`)){showToast('Refund initiated for '+id,'info')}}
+function provisionOrder(id){openModal('esim-provision');showToast('Provisioning '+id,'info')}
+function viewESIM(iccid){showToast('Loading eSIM details for '+iccid,'info')}
+function topUpESIM(iccid){showToast('Top-up modal coming: '+iccid,'info')}
+function revokeESIM(iccid){if(confirm(`Revoke eSIM ${iccid}? This cannot be undone.`)){showToast('eSIM revoked: '+iccid,'success')}}
+function viewUser(id){showToast('Loading user profile '+id,'info')}
+function editUser(id){openModal('user-add');document.querySelector('#modal-content h2').textContent='Edit User — '+id}
+function deleteUser(id){if(confirm(`Delete user ${id}? This cannot be undone.`)){showToast('User deleted: '+id,'success')}}
+function changeSegment(id){openModal('segment-add');document.querySelector('#modal-content h2').textContent='Change Segment for '+id}
+function editPlan(id){openModal('plan-add');document.querySelector('#modal-content h2').textContent='Edit Plan — '+id}
+function duplicatePlan(id){showToast('Plan duplicated: '+id,'success')}
+function deletePlan(id){if(confirm(`Delete plan ${id}?`)){showToast('Plan deleted: '+id,'success')}}
+function editCampaign(name){openModal('campaign-add');document.querySelector('#modal-content h2').textContent='Edit Campaign — '+name}
+function deleteCampaign(name){if(confirm(`Delete campaign "${name}"?`)){showToast('Campaign deleted','success')}}
+function editCoupon(code){openModal('coupon-add');document.querySelector('#modal-content h2').textContent='Edit Coupon — '+code}
+function deleteCoupon(code){if(confirm(`Delete coupon ${code}?`)){showToast('Coupon deleted','success')}}
+function replyTicket(id){openModal('ticket-add');document.querySelector('#modal-content h2').textContent='Reply to Ticket '+id}
+function assignTicket(id){showToast('Assigning ticket '+id,'info')}
+function resolveTicket(id){showToast('Ticket '+id+' resolved','success')}
+function editProvider(id){openModal('provider-add');document.querySelector('#modal-content h2').textContent='Configure Provider — '+id}
+function removeProvider(id){if(confirm(`Remove provider ${id}?`)){showToast('Provider removed','success')}}
+function refreshProviders(){showToast('Health check running...','info');setTimeout(()=>showToast('All 3 providers healthy ✓','success'),2000)}
+function editReseller(name){openModal('reseller-add');document.querySelector('#modal-content h2').textContent='Edit Reseller — '+name}
+function payCommission(name){if(confirm(`Pay pending commission to ${name}?`)){showToast('Commission paid to '+name,'success')}}
+function rotateKey(name){if(confirm(`Rotate API key for ${name}? Old key will stop working.`)){showToast('New API key generated for '+name,'success')}}
+function viewSupplier(name){showToast('Loading supplier details: '+name,'info')}
+function bulkPayCommissions(){if(confirm('Pay all pending commissions? Total: $3,200')){showToast('All commissions paid ✓','success')}}
+function sendToSegment(name){openModal('ticket-add');document.querySelector('#modal-content h2').textContent='Notify Segment: '+name}
+function editSegment(name){openModal('segment-add');document.querySelector('#modal-content h2').textContent='Edit Segment: '+name}
+function editRegion(name){openModal('region-add');document.querySelector('#modal-content h2').textContent='Edit Region: '+name}
+function sendNotif(){
+  const t=document.getElementById('notif-title')?.value;
+  if(!t){showToast('Title required','error');return;}
+  showToast('Notification sent to '+document.getElementById('notif-audience').value,'success');
+}
+function previewNotif(){showToast('Preview: notification looks good','info')}
+function previewCodes(){showToast('Preview: PRIME-X7K2A1, PRIME-B8M3C2, PRIME-N4P5Q6','info')}
+function bulkAction(){showToast('Select an action from the dropdown','info')}
+function saveSettings(section){showToast(section.charAt(0).toUpperCase()+section.slice(1)+' settings saved ✓','success')}
+function saveToggle(key,el){showToast(key+': '+(el.classList.contains('on')?'enabled':'disabled'),'info')}
+function testProviders(){showToast('Testing provider connections...','info');setTimeout(()=>showToast('All providers connected ✓','success'),2000)}
+function changePassword(){
+  const np=document.getElementById('new-pass')?.value;
+  if(np&&np.length>=12)showToast('Password updated ✓','success');
+  else showToast('Password must be at least 12 characters','error');
+}
+function checkDomains(){showToast('Checking DNS records...','info');setTimeout(()=>showToast('All domains resolving correctly ✓','success'),1500)}
+function checkSSL(){showToast('Checking SSL certificates...','info');setTimeout(()=>showToast('SSL valid for all domains ✓','success'),1500)}
+function refreshDash(){showToast('Dashboard refreshed','success')}
+function changeAnalyticsPeriod(v){showToast('Analytics period: '+v,'info')}
+function exportCSV(section){showToast('Exporting '+section+' as CSV...','info');setTimeout(()=>showToast('CSV downloaded ✓','success'),800)}
+function exportPDF(section){showToast('Generating PDF report...','info');setTimeout(()=>showToast('PDF downloaded ✓','success'),1200)}
+function generateReport(){showToast('Generating custom report...','info');setTimeout(()=>showToast('Report downloaded ✓','success'),1500)}
+
+/* ════════════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════════════ */
+function showToast(msg,type='success'){
+  const c=document.getElementById('toasts');
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=`<span>${type==='success'?'✓':type==='error'?'✕':'ℹ️'}</span>${msg}`;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.animation='tIn .3s ease reverse';setTimeout(()=>t.remove(),300)},3000);
+}
+</script>
+</body></html>
