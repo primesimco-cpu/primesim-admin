@@ -1,2 +1,0 @@
-# primesim-admin
-primesim-admin
