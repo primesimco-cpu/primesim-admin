@@ -1,1 +1,2 @@
-{"version":2,"builds":[{"src":"*.html","use":"@vercel/static"}],"routes":[{"src":"/(.*)", "dest":"/index.html"}],"headers":[{"source":"/(.*)", "headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"},{"key":"X-Robots-Tag","value":"noindex, nofollow"}]}]}
+{"version":2,"builds":[{"src":"*.html","use":"@vercel/static"}],"routes":[{"src":"/(.*)", "dest":"/index.html"}],
+"headers":[{"source":"/(.*)", "headers":[{"key":"Cache-Control","value":"no-cache, no-store, must-revalidate"},{"key":"Pragma","value":"no-cache"}]}]}

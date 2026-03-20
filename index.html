@@ -405,6 +405,7 @@ body{overflow:hidden!important}
       <button class="asb" id="asb-orders" onclick="Admin.go('orders')"><span class="aic">📦</span><span class="asb-text">Orders</span></button>
       <div class="asec asb-text">Marketing</div>
       <button class="asb" id="asb-coupons" onclick="Admin.go('coupons')"><span class="aic">🎟️</span><span class="asb-text">Coupons</span></button>
+      <button class="asb" id="asb-campaigns" onclick="Admin.go('campaigns')"><span class="aic">📣</span><span class="asb-text">Campaigns</span></button>
       <div class="asec asb-text">Finance</div>
       <button class="asb" id="asb-revenue" onclick="Admin.go('revenue')"><span class="aic">💰</span><span class="asb-text">Revenue</span></button>
       <div class="asec asb-text">System</div>
@@ -1146,7 +1147,59 @@ var Admin = {
   }
 };
 
-// GLOBAL EVENT DELEGATION
+
+  pg_campaigns: function() {
+    var h = '<h2 style="font-family:var(--ff);font-size:22px;font-weight:800;margin-bottom:18px">Campaigns</h2>';
+    h += '<div class="al al-b" style="margin-bottom:16px">🚀 Email and push notification campaigns. Configure from here, send via your ESP integration.</div>';
+    // Campaign types
+    var campaigns_data = [
+      {name:'Welcome Email',status:'active',type:'Trigger',sent:247,open:'68%',last:'Auto'},
+      {name:'Abandoned Cart',status:'active',type:'Trigger',sent:89,open:'41%',last:'Auto'},
+      {name:'PrimeMoney Low Balance',status:'draft',type:'Trigger',sent:0,open:'—',last:'Never'},
+      {name:'Monthly Newsletter',status:'active',type:'Manual',sent:412,open:'52%',last:'2026-03-01'},
+      {name:'Flash Sale - FLASH40',status:'paused',type:'Manual',sent:156,open:'61%',last:'2026-02-14'},
+    ];
+    h += '<div class="mg" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">';
+    h += '<div class="mc cg"><div class="ml">Active Campaigns</div><div class="mv">'+campaigns_data.filter(function(c){return c.status==='active';}).length+'</div></div>';
+    h += '<div class="mc cb"><div class="ml">Total Sent</div><div class="mv">'+campaigns_data.reduce(function(s,c){return s+c.sent;},0)+'</div></div>';
+    h += '<div class="mc ca"><div class="ml">Avg Open Rate</div><div class="mv">55%</div></div></div>';
+    h += '<div class="tw"><div class="th"><span class="tt">Email Campaigns</span><button class="btn btn-g btn-sm" onclick="Admin._newCampaign()">+ New Campaign</button></div>';
+    h += '<table><thead><tr><th>Campaign</th><th>Type</th><th>Status</th><th>Sent</th><th>Open Rate</th><th>Last Run</th><th>Actions</th></tr></thead><tbody>';
+    campaigns_data.forEach(function(c) {
+      var sb = c.status==='active'?'bg':c.status==='paused'?'ba':'bx';
+      h += '<tr><td class="t1">'+c.name+'</td><td>'+badge(c.type,'bb')+'</td>';
+      h += '<td>'+badge(c.status,sb)+'</td>';
+      h += '<td style="color:#60A5FA">'+c.sent+'</td><td style="color:var(--g)">'+c.open+'</td>';
+      h += '<td class="tm">'+c.last+'</td>';
+      h += '<td><div class="ta"><button class="btn btn-gl btn-xs">✏️</button><button class="btn btn-gl btn-xs">▶</button></div></td></tr>';
+    });
+    h += '</tbody></table></div>';
+    // SMS / Push
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">';
+    h += '<div class="card"><h3 style="font-family:var(--ff);font-size:14px;font-weight:700;margin-bottom:12px">📱 Push Notifications</h3>';
+    h += '<p style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:12px">Requires integration with Firebase Cloud Messaging. Enable in Settings to activate push notifications for eSIM status updates, low data alerts, and promotional campaigns.</p>';
+    h += '<button class="btn btn-gl btn-sm" onclick="toast('FCM setup required. See docs.','w')">Configure FCM</button></div>';
+    h += '<div class="card"><h3 style="font-family:var(--ff);font-size:14px;font-weight:700;margin-bottom:12px">📊 Analytics</h3>';
+    h += '<div style="display:flex;flex-direction:column;gap:8px">';
+    [{label:'Emails sent this month',val:'904'},{label:'Avg open rate',val:'55%'},{label:'Click-through rate',val:'12%'},{label:'Unsubscribes',val:'3'}].forEach(function(s){
+      h += '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--e1)"><span style="font-size:12px;color:var(--t2)">'+s.label+'</span><span style="font-size:13px;font-weight:700;color:var(--g)">'+s.val+'</span></div>';
+    });
+    h += '</div></div></div>';
+    return h;
+  },
+
+  _newCampaign: function() {
+    var h = '<h2>+ New Campaign</h2>';
+    h += '<div class="f"><label>Campaign Name</label><input id="camp-name" placeholder="e.g. Summer Flash Sale"></div>';
+    h += '<div class="f"><label>Type</label><select id="camp-type"><option>Email</option><option>Push Notification</option><option>SMS</option></select></div>';
+    h += '<div class="f"><label>Subject Line</label><input id="camp-subj" placeholder="🌞 Summer eSIM Sale - Up to 30% off!"></div>';
+    h += '<div class="f"><label>Message / Content</label><textarea id="camp-body" placeholder="Dear {{name}}, ..."></textarea></div>';
+    h += '<div class="f"><label>Target Audience</label><select id="camp-aud"><option>All Users</option><option>Traveler Tier</option><option>Gold+ Tier</option><option>Inactive Users (30+ days)</option><option>Recently Purchased</option></select></div>';
+    h += '<div class="fa"><button class="btn btn-gl" onclick="closeModal()">Cancel</button><button class="btn btn-g" onclick="toast('Campaign saved as draft ✓');closeModal()">💾 Save Draft</button></div>';
+    openModal(h, true);
+  },
+
+  // GLOBAL EVENT DELEGATION
 document.addEventListener('click',function(e){
   var el=e.target.closest('[data-action]');
   if(!el)return;
